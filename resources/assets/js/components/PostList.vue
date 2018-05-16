@@ -1,10 +1,14 @@
 <template>
-<ul class="list-group">
-  <li class="list-group-item" v-for="post in posts">{{post.name}}</li>
-</ul>
+
+  <ul class="list-group">
+    <li class="list-group-item" v-for="post in posts">{{post.name}}</li>
+  </ul>
+
 </template>
 
 <script>
+
+
 import axios from 'axios';
 
 export default {

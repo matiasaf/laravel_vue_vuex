@@ -82,17 +82,10 @@
             <div id="app">
               {{-- <example-component></example-component> --}}
 
-              <add-post></add-post>
-
-              <br>
-
-              <post-list></post-list>
-
-              <br>
-
-              <counter></counter>
+              <main-app>
 
             </div>
+
         </div>
 
         <script src="/js/app.js"></script>

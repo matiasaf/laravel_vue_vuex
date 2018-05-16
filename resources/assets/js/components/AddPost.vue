@@ -6,12 +6,14 @@
       <input type="text" class="form-control"  v-model="newPost.name"/>
       <br>
       <button @click="addPost" class="btn btn-primary">Agregar</button>
+      <button @click="addPost" class="btn btn-primary">Agregar</button>
 
     </div>
 
 </template>
 
 <script>
+
 import axios from 'axios';
 
 export default {
