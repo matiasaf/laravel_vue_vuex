@@ -1,26 +1,24 @@
 <template>
+<div>
 
-  <div>
+  <AddPost />
 
-    <h1>Listado de posts</h1>
+  <PostList />
 
-    <AddPost />
-
-    <PostList />
-
-  </div>
-
+</div>
 </template>
 
 <script>
-
 import AddPost from './AddPost.vue';
 import PostList from './PostList.vue';
 
+
 export default {
 
-  components: { AddPost, PostList}
+  components: {
+    AddPost,
+    PostList
+  }
 
 }
-
 </script>

@@ -1,20 +1,18 @@
 <template>
+<div class="form-group">
+  <h1>Agregar nuevo post</h1>
+  <label>Post :</label>
+  <input type="text" class="form-control" v-model="newPost.name" />
+  <br>
+  <button @click="addPost(newPost)" class="btn btn-primary">Agregar</button>
 
-    <div class="form-group">
-
-      <label>Post :</label>
-      <input type="text" class="form-control"  v-model="newPost.name"/>
-      <br>
-      <button @click="addPost" class="btn btn-primary">Agregar</button>
-      <button @click="addPost" class="btn btn-primary">Agregar</button>
-
-    </div>
-
+</div>
 </template>
 
 <script>
-
-import axios from 'axios';
+import {
+  mapActions
+} from 'vuex';
 
 export default {
 
@@ -22,22 +20,17 @@ export default {
 
     return {
 
-      newPost : { name : ''}
+      newPost: {
+        name: ''
+      }
 
     }
 
   },
 
-  methods: {
+  methods: mapActions(['addPost']),
 
-    addPost: function(e){
-      axios.post('/api/post', {name : this.newPost.name}).then(res => console.log(res.data));
-    }
-
-  },
   mounted() {
-
-    console.log('Add post mounted.')
 
   }
 }

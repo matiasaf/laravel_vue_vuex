@@ -80,7 +80,6 @@
             @endif
 
             <div id="app">
-              {{-- <example-component></example-component> --}}
 
               <main-app>
 
