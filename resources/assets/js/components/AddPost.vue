@@ -1,10 +1,8 @@
 <template>
 <div class="form-group">
-  <h1>Agregar nuevo post</h1>
-  <label>Post :</label>
-  <input type="text" class="form-control" v-model="newPost.name" />
-  <br>
-  <button @click="addPost(newPost)" class="btn btn-primary">Agregar</button>
+
+    <input class="form-control mr-sm-2" type="text" v-model="newPost.name" />
+    <button class="btn btn-outline-success my-2 my-sm-0" @click="addPost">Agregar</button>
 
 </div>
 </template>
@@ -28,7 +26,14 @@ export default {
 
   },
 
-  methods: mapActions(['addPost']),
+  methods: {
+
+    addPost : function(){
+      this.$store.dispatch('addPost', this.newPost);
+      this.$snotify.success(`¡El post fue agregado con éxito!`);
+    }
+
+  },
 
   mounted() {
 
