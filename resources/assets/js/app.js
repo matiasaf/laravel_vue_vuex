@@ -35,22 +35,30 @@ Vue.use(Snotify);
 
 
 import App from './views/App'
-import PostsPage from './views/PostsPage'
-import PostList from './components/PostList'
+import MainPage from './views/MainPage'
+import AdminPage from './views/AdminPage'
+import NoticiasABM from './views/NoticiasABM'
 
 const router = new VueRouter({
     mode: 'history',
     routes: [
         {
             path: '/',
-            name: 'posts',
-            component: PostsPage
+            name: 'main',
+            component: MainPage
         },
         {
-            path: '/hello',
-            name: 'hello',
-            component: PostList,
+            path: '/admin',
+            name: 'admin',
+            component: AdminPage
         },
+        {
+            path: '/noticiasabm',
+            name: 'noticiasabm',
+            component: NoticiasABM
+
+        },
+
     ],
 });
 
