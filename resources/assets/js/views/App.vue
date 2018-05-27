@@ -24,6 +24,6 @@ export default {
 </script>
 <style >
   .micontainer{
-    background-color: #cecece;
+    /*background-color: #cecece;*/
   }
 </style>

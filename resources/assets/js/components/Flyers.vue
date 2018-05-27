@@ -1,8 +1,16 @@
 <template>
-  
+
 <div class="flyers">
   <div class="card bg-dark text-white">
-    <img class="card-img" v-bind:src="src_img" alt="Card image">
+
+    <a :href="url_sitio" v-if="url_sitio">
+
+      <img class="card-img" v-bind:src="src_img" alt="Card image">
+
+    </a>
+
+    <img  v-else class="card-img" v-bind:src="src_img" alt="Card image">
+
   </div>
 </div>
 
@@ -11,7 +19,7 @@
 <script>
 export default {
 
-  props: ['src_img'],
+  props: ['src_img', 'url_sitio'],
 
 }
 </script>

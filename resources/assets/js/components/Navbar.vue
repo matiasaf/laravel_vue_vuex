@@ -16,17 +16,17 @@
         <span class="sr-only">(current)</span></a>
       <a class="nav-item nav-link" href="#">
 
-        <router-link class="linksfont" :to="{ name: 'main' }">Gobierno</router-link>
+        <router-link class="linksfont" :to="{ name: 'gobierno' }">Gobierno</router-link>
 
       </a>
       <a class="nav-item nav-link" href="#">
 
-        <router-link class="linksfont" :to="{ name: 'main' }">La provincia</router-link>
+        <router-link class="linksfont" :to="{ name: 'provincia' }">La provincia</router-link>
 
       </a>
       <a class="nav-item nav-link disabled" href="#">
 
-        <router-link class="linksfont" :to="{ name: 'main' }">Transparencia</router-link>
+        <router-link class="linksfont" :to="{ name: 'transparencia' }">Transparencia</router-link>
 
       </a>
       <a class="nav-item nav-link disabled" href="#">

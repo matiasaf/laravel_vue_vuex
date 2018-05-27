@@ -38,6 +38,9 @@ import App from './views/App'
 import MainPage from './views/MainPage'
 import AdminPage from './views/AdminPage'
 import NoticiasABM from './views/NoticiasABM'
+import GobiernoPage from './views/GobiernoPage'
+import ProvinciaPage from './views/ProvinciaPage'
+import TransparenciaPage from './views/TransparenciaPage'
 
 const router = new VueRouter({
     mode: 'history',
@@ -48,6 +51,21 @@ const router = new VueRouter({
             component: MainPage
         },
         {
+            path: '/gobierno',
+            name: 'gobierno',
+            component: GobiernoPage
+        },
+        {
+            path: '/provincia',
+            name: 'provincia',
+            component: ProvinciaPage
+        },
+        {
+            path: '/transparencia',
+            name: 'transparencia',
+            component: TransparenciaPage
+        },
+        {
             path: '/admin',
             name: 'admin',
             component: AdminPage
@@ -56,7 +74,6 @@ const router = new VueRouter({
             path: '/noticiasabm',
             name: 'noticiasabm',
             component: NoticiasABM
-
         },
 
     ],

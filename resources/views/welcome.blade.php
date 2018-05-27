@@ -16,19 +16,24 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
   <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
 
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+
+
 
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+  <link rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/animate.css@3.5.2/animate.min.css">
 
-
-  <link rel="stylesheet" href="/css/otro.css">
+<link rel="stylesheet" href="/css/otro.css">
 
   <!-- Styles -->
   <style>
     html,
     body {
-      background-color: #fff;
       color: #636b6f;
-      font-family: 'Raleway', sans-serif;
+      /*background-color: #cecece;*/
+      /*font-family: 'Raleway', sans-serif;*/
+      font-family: 'Open Sans', sans-serif;
       font-weight: 100;
       height: 100vh;
       margin: 0;
@@ -87,9 +92,11 @@
 
   </div>
 
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="./js/app.js"></script>
+  <script type="text/javascript">
 
+  </script>
 
 </body>
 

@@ -60,11 +60,93 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 17);
+/******/ 	return __webpack_require__(__webpack_require__.s = 21);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+// css base code, injected by the css-loader
+module.exports = function(useSourceMap) {
+	var list = [];
+
+	// return the list of modules as css string
+	list.toString = function toString() {
+		return this.map(function (item) {
+			var content = cssWithMappingToString(item, useSourceMap);
+			if(item[2]) {
+				return "@media " + item[2] + "{" + content + "}";
+			} else {
+				return content;
+			}
+		}).join("");
+	};
+
+	// import a list of modules into the list
+	list.i = function(modules, mediaQuery) {
+		if(typeof modules === "string")
+			modules = [[null, modules, ""]];
+		var alreadyImportedModules = {};
+		for(var i = 0; i < this.length; i++) {
+			var id = this[i][0];
+			if(typeof id === "number")
+				alreadyImportedModules[id] = true;
+		}
+		for(i = 0; i < modules.length; i++) {
+			var item = modules[i];
+			// skip already imported module
+			// this implementation is not 100% perfect for weird media query combinations
+			//  when a module is imported multiple times with different media queries.
+			//  I hope this will never occur (Hey this way we have smaller bundles)
+			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+				if(mediaQuery && !item[2]) {
+					item[2] = mediaQuery;
+				} else if(mediaQuery) {
+					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+				}
+				list.push(item);
+			}
+		}
+	};
+	return list;
+};
+
+function cssWithMappingToString(item, useSourceMap) {
+	var content = item[1] || '';
+	var cssMapping = item[3];
+	if (!cssMapping) {
+		return content;
+	}
+
+	if (useSourceMap && typeof btoa === 'function') {
+		var sourceMapping = toComment(cssMapping);
+		var sourceURLs = cssMapping.sources.map(function (source) {
+			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
+		});
+
+		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
+	}
+
+	return [content].join('\n');
+}
+
+// Adapted from convert-source-map (MIT)
+function toComment(sourceMap) {
+	// eslint-disable-next-line no-undef
+	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
+	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
+
+	return '/*# ' + data + ' */';
+}
+
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports) {
 
 /* globals __VUE_SSR_CONTEXT__ */
@@ -173,88 +255,6 @@ module.exports = function normalizeComponent (
 
 
 /***/ }),
-/* 1 */
-/***/ (function(module, exports) {
-
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-// css base code, injected by the css-loader
-module.exports = function(useSourceMap) {
-	var list = [];
-
-	// return the list of modules as css string
-	list.toString = function toString() {
-		return this.map(function (item) {
-			var content = cssWithMappingToString(item, useSourceMap);
-			if(item[2]) {
-				return "@media " + item[2] + "{" + content + "}";
-			} else {
-				return content;
-			}
-		}).join("");
-	};
-
-	// import a list of modules into the list
-	list.i = function(modules, mediaQuery) {
-		if(typeof modules === "string")
-			modules = [[null, modules, ""]];
-		var alreadyImportedModules = {};
-		for(var i = 0; i < this.length; i++) {
-			var id = this[i][0];
-			if(typeof id === "number")
-				alreadyImportedModules[id] = true;
-		}
-		for(i = 0; i < modules.length; i++) {
-			var item = modules[i];
-			// skip already imported module
-			// this implementation is not 100% perfect for weird media query combinations
-			//  when a module is imported multiple times with different media queries.
-			//  I hope this will never occur (Hey this way we have smaller bundles)
-			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-				if(mediaQuery && !item[2]) {
-					item[2] = mediaQuery;
-				} else if(mediaQuery) {
-					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-				}
-				list.push(item);
-			}
-		}
-	};
-	return list;
-};
-
-function cssWithMappingToString(item, useSourceMap) {
-	var content = item[1] || '';
-	var cssMapping = item[3];
-	if (!cssMapping) {
-		return content;
-	}
-
-	if (useSourceMap && typeof btoa === 'function') {
-		var sourceMapping = toComment(cssMapping);
-		var sourceURLs = cssMapping.sources.map(function (source) {
-			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
-		});
-
-		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
-	}
-
-	return [content].join('\n');
-}
-
-// Adapted from convert-source-map (MIT)
-function toComment(sourceMap) {
-	// eslint-disable-next-line no-undef
-	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
-	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
-
-	return '/*# ' + data + ' */';
-}
-
-
-/***/ }),
 /* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -274,7 +274,7 @@ if (typeof DEBUG !== 'undefined' && DEBUG) {
   ) }
 }
 
-var listToStyles = __webpack_require__(56)
+var listToStyles = __webpack_require__(60)
 
 /*
 type StyleObject = {
@@ -489,8 +489,8 @@ function applyToTag (styleElement, obj) {
 "use strict";
 
 
-var bind = __webpack_require__(11);
-var isBuffer = __webpack_require__(25);
+var bind = __webpack_require__(13);
+var isBuffer = __webpack_require__(29);
 
 /*global toString:true*/
 
@@ -821,13 +821,1009 @@ module.exports = g;
 
 /***/ }),
 /* 5 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* unused harmony export Store */
+/* unused harmony export install */
+/* unused harmony export mapState */
+/* unused harmony export mapMutations */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return mapGetters; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return mapActions; });
+/* unused harmony export createNamespacedHelpers */
+/**
+ * vuex v3.0.1
+ * (c) 2017 Evan You
+ * @license MIT
+ */
+var applyMixin = function (Vue) {
+  var version = Number(Vue.version.split('.')[0]);
+
+  if (version >= 2) {
+    Vue.mixin({ beforeCreate: vuexInit });
+  } else {
+    // override init and inject vuex init procedure
+    // for 1.x backwards compatibility.
+    var _init = Vue.prototype._init;
+    Vue.prototype._init = function (options) {
+      if ( options === void 0 ) options = {};
+
+      options.init = options.init
+        ? [vuexInit].concat(options.init)
+        : vuexInit;
+      _init.call(this, options);
+    };
+  }
+
+  /**
+   * Vuex init hook, injected into each instances init hooks list.
+   */
+
+  function vuexInit () {
+    var options = this.$options;
+    // store injection
+    if (options.store) {
+      this.$store = typeof options.store === 'function'
+        ? options.store()
+        : options.store;
+    } else if (options.parent && options.parent.$store) {
+      this.$store = options.parent.$store;
+    }
+  }
+};
+
+var devtoolHook =
+  typeof window !== 'undefined' &&
+  window.__VUE_DEVTOOLS_GLOBAL_HOOK__;
+
+function devtoolPlugin (store) {
+  if (!devtoolHook) { return }
+
+  store._devtoolHook = devtoolHook;
+
+  devtoolHook.emit('vuex:init', store);
+
+  devtoolHook.on('vuex:travel-to-state', function (targetState) {
+    store.replaceState(targetState);
+  });
+
+  store.subscribe(function (mutation, state) {
+    devtoolHook.emit('vuex:mutation', mutation, state);
+  });
+}
+
+/**
+ * Get the first item that pass the test
+ * by second argument function
+ *
+ * @param {Array} list
+ * @param {Function} f
+ * @return {*}
+ */
+/**
+ * Deep copy the given object considering circular structure.
+ * This function caches all nested objects and its copies.
+ * If it detects circular structure, use cached copy to avoid infinite loop.
+ *
+ * @param {*} obj
+ * @param {Array<Object>} cache
+ * @return {*}
+ */
+
+
+/**
+ * forEach for object
+ */
+function forEachValue (obj, fn) {
+  Object.keys(obj).forEach(function (key) { return fn(obj[key], key); });
+}
+
+function isObject (obj) {
+  return obj !== null && typeof obj === 'object'
+}
+
+function isPromise (val) {
+  return val && typeof val.then === 'function'
+}
+
+function assert (condition, msg) {
+  if (!condition) { throw new Error(("[vuex] " + msg)) }
+}
+
+var Module = function Module (rawModule, runtime) {
+  this.runtime = runtime;
+  this._children = Object.create(null);
+  this._rawModule = rawModule;
+  var rawState = rawModule.state;
+  this.state = (typeof rawState === 'function' ? rawState() : rawState) || {};
+};
+
+var prototypeAccessors$1 = { namespaced: { configurable: true } };
+
+prototypeAccessors$1.namespaced.get = function () {
+  return !!this._rawModule.namespaced
+};
+
+Module.prototype.addChild = function addChild (key, module) {
+  this._children[key] = module;
+};
+
+Module.prototype.removeChild = function removeChild (key) {
+  delete this._children[key];
+};
+
+Module.prototype.getChild = function getChild (key) {
+  return this._children[key]
+};
+
+Module.prototype.update = function update (rawModule) {
+  this._rawModule.namespaced = rawModule.namespaced;
+  if (rawModule.actions) {
+    this._rawModule.actions = rawModule.actions;
+  }
+  if (rawModule.mutations) {
+    this._rawModule.mutations = rawModule.mutations;
+  }
+  if (rawModule.getters) {
+    this._rawModule.getters = rawModule.getters;
+  }
+};
+
+Module.prototype.forEachChild = function forEachChild (fn) {
+  forEachValue(this._children, fn);
+};
+
+Module.prototype.forEachGetter = function forEachGetter (fn) {
+  if (this._rawModule.getters) {
+    forEachValue(this._rawModule.getters, fn);
+  }
+};
+
+Module.prototype.forEachAction = function forEachAction (fn) {
+  if (this._rawModule.actions) {
+    forEachValue(this._rawModule.actions, fn);
+  }
+};
+
+Module.prototype.forEachMutation = function forEachMutation (fn) {
+  if (this._rawModule.mutations) {
+    forEachValue(this._rawModule.mutations, fn);
+  }
+};
+
+Object.defineProperties( Module.prototype, prototypeAccessors$1 );
+
+var ModuleCollection = function ModuleCollection (rawRootModule) {
+  // register root module (Vuex.Store options)
+  this.register([], rawRootModule, false);
+};
+
+ModuleCollection.prototype.get = function get (path) {
+  return path.reduce(function (module, key) {
+    return module.getChild(key)
+  }, this.root)
+};
+
+ModuleCollection.prototype.getNamespace = function getNamespace (path) {
+  var module = this.root;
+  return path.reduce(function (namespace, key) {
+    module = module.getChild(key);
+    return namespace + (module.namespaced ? key + '/' : '')
+  }, '')
+};
+
+ModuleCollection.prototype.update = function update$1 (rawRootModule) {
+  update([], this.root, rawRootModule);
+};
+
+ModuleCollection.prototype.register = function register (path, rawModule, runtime) {
+    var this$1 = this;
+    if ( runtime === void 0 ) runtime = true;
+
+  if (true) {
+    assertRawModule(path, rawModule);
+  }
+
+  var newModule = new Module(rawModule, runtime);
+  if (path.length === 0) {
+    this.root = newModule;
+  } else {
+    var parent = this.get(path.slice(0, -1));
+    parent.addChild(path[path.length - 1], newModule);
+  }
+
+  // register nested modules
+  if (rawModule.modules) {
+    forEachValue(rawModule.modules, function (rawChildModule, key) {
+      this$1.register(path.concat(key), rawChildModule, runtime);
+    });
+  }
+};
+
+ModuleCollection.prototype.unregister = function unregister (path) {
+  var parent = this.get(path.slice(0, -1));
+  var key = path[path.length - 1];
+  if (!parent.getChild(key).runtime) { return }
+
+  parent.removeChild(key);
+};
+
+function update (path, targetModule, newModule) {
+  if (true) {
+    assertRawModule(path, newModule);
+  }
+
+  // update target module
+  targetModule.update(newModule);
+
+  // update nested modules
+  if (newModule.modules) {
+    for (var key in newModule.modules) {
+      if (!targetModule.getChild(key)) {
+        if (true) {
+          console.warn(
+            "[vuex] trying to add a new module '" + key + "' on hot reloading, " +
+            'manual reload is needed'
+          );
+        }
+        return
+      }
+      update(
+        path.concat(key),
+        targetModule.getChild(key),
+        newModule.modules[key]
+      );
+    }
+  }
+}
+
+var functionAssert = {
+  assert: function (value) { return typeof value === 'function'; },
+  expected: 'function'
+};
+
+var objectAssert = {
+  assert: function (value) { return typeof value === 'function' ||
+    (typeof value === 'object' && typeof value.handler === 'function'); },
+  expected: 'function or object with "handler" function'
+};
+
+var assertTypes = {
+  getters: functionAssert,
+  mutations: functionAssert,
+  actions: objectAssert
+};
+
+function assertRawModule (path, rawModule) {
+  Object.keys(assertTypes).forEach(function (key) {
+    if (!rawModule[key]) { return }
+
+    var assertOptions = assertTypes[key];
+
+    forEachValue(rawModule[key], function (value, type) {
+      assert(
+        assertOptions.assert(value),
+        makeAssertionMessage(path, key, type, value, assertOptions.expected)
+      );
+    });
+  });
+}
+
+function makeAssertionMessage (path, key, type, value, expected) {
+  var buf = key + " should be " + expected + " but \"" + key + "." + type + "\"";
+  if (path.length > 0) {
+    buf += " in module \"" + (path.join('.')) + "\"";
+  }
+  buf += " is " + (JSON.stringify(value)) + ".";
+  return buf
+}
+
+var Vue; // bind on install
+
+var Store = function Store (options) {
+  var this$1 = this;
+  if ( options === void 0 ) options = {};
+
+  // Auto install if it is not done yet and `window` has `Vue`.
+  // To allow users to avoid auto-installation in some cases,
+  // this code should be placed here. See #731
+  if (!Vue && typeof window !== 'undefined' && window.Vue) {
+    install(window.Vue);
+  }
+
+  if (true) {
+    assert(Vue, "must call Vue.use(Vuex) before creating a store instance.");
+    assert(typeof Promise !== 'undefined', "vuex requires a Promise polyfill in this browser.");
+    assert(this instanceof Store, "Store must be called with the new operator.");
+  }
+
+  var plugins = options.plugins; if ( plugins === void 0 ) plugins = [];
+  var strict = options.strict; if ( strict === void 0 ) strict = false;
+
+  var state = options.state; if ( state === void 0 ) state = {};
+  if (typeof state === 'function') {
+    state = state() || {};
+  }
+
+  // store internal state
+  this._committing = false;
+  this._actions = Object.create(null);
+  this._actionSubscribers = [];
+  this._mutations = Object.create(null);
+  this._wrappedGetters = Object.create(null);
+  this._modules = new ModuleCollection(options);
+  this._modulesNamespaceMap = Object.create(null);
+  this._subscribers = [];
+  this._watcherVM = new Vue();
+
+  // bind commit and dispatch to self
+  var store = this;
+  var ref = this;
+  var dispatch = ref.dispatch;
+  var commit = ref.commit;
+  this.dispatch = function boundDispatch (type, payload) {
+    return dispatch.call(store, type, payload)
+  };
+  this.commit = function boundCommit (type, payload, options) {
+    return commit.call(store, type, payload, options)
+  };
+
+  // strict mode
+  this.strict = strict;
+
+  // init root module.
+  // this also recursively registers all sub-modules
+  // and collects all module getters inside this._wrappedGetters
+  installModule(this, state, [], this._modules.root);
+
+  // initialize the store vm, which is responsible for the reactivity
+  // (also registers _wrappedGetters as computed properties)
+  resetStoreVM(this, state);
+
+  // apply plugins
+  plugins.forEach(function (plugin) { return plugin(this$1); });
+
+  if (Vue.config.devtools) {
+    devtoolPlugin(this);
+  }
+};
+
+var prototypeAccessors = { state: { configurable: true } };
+
+prototypeAccessors.state.get = function () {
+  return this._vm._data.$$state
+};
+
+prototypeAccessors.state.set = function (v) {
+  if (true) {
+    assert(false, "Use store.replaceState() to explicit replace store state.");
+  }
+};
+
+Store.prototype.commit = function commit (_type, _payload, _options) {
+    var this$1 = this;
+
+  // check object-style commit
+  var ref = unifyObjectStyle(_type, _payload, _options);
+    var type = ref.type;
+    var payload = ref.payload;
+    var options = ref.options;
+
+  var mutation = { type: type, payload: payload };
+  var entry = this._mutations[type];
+  if (!entry) {
+    if (true) {
+      console.error(("[vuex] unknown mutation type: " + type));
+    }
+    return
+  }
+  this._withCommit(function () {
+    entry.forEach(function commitIterator (handler) {
+      handler(payload);
+    });
+  });
+  this._subscribers.forEach(function (sub) { return sub(mutation, this$1.state); });
+
+  if (
+    "development" !== 'production' &&
+    options && options.silent
+  ) {
+    console.warn(
+      "[vuex] mutation type: " + type + ". Silent option has been removed. " +
+      'Use the filter functionality in the vue-devtools'
+    );
+  }
+};
+
+Store.prototype.dispatch = function dispatch (_type, _payload) {
+    var this$1 = this;
+
+  // check object-style dispatch
+  var ref = unifyObjectStyle(_type, _payload);
+    var type = ref.type;
+    var payload = ref.payload;
+
+  var action = { type: type, payload: payload };
+  var entry = this._actions[type];
+  if (!entry) {
+    if (true) {
+      console.error(("[vuex] unknown action type: " + type));
+    }
+    return
+  }
+
+  this._actionSubscribers.forEach(function (sub) { return sub(action, this$1.state); });
+
+  return entry.length > 1
+    ? Promise.all(entry.map(function (handler) { return handler(payload); }))
+    : entry[0](payload)
+};
+
+Store.prototype.subscribe = function subscribe (fn) {
+  return genericSubscribe(fn, this._subscribers)
+};
+
+Store.prototype.subscribeAction = function subscribeAction (fn) {
+  return genericSubscribe(fn, this._actionSubscribers)
+};
+
+Store.prototype.watch = function watch (getter, cb, options) {
+    var this$1 = this;
+
+  if (true) {
+    assert(typeof getter === 'function', "store.watch only accepts a function.");
+  }
+  return this._watcherVM.$watch(function () { return getter(this$1.state, this$1.getters); }, cb, options)
+};
+
+Store.prototype.replaceState = function replaceState (state) {
+    var this$1 = this;
+
+  this._withCommit(function () {
+    this$1._vm._data.$$state = state;
+  });
+};
+
+Store.prototype.registerModule = function registerModule (path, rawModule, options) {
+    if ( options === void 0 ) options = {};
+
+  if (typeof path === 'string') { path = [path]; }
+
+  if (true) {
+    assert(Array.isArray(path), "module path must be a string or an Array.");
+    assert(path.length > 0, 'cannot register the root module by using registerModule.');
+  }
+
+  this._modules.register(path, rawModule);
+  installModule(this, this.state, path, this._modules.get(path), options.preserveState);
+  // reset store to update getters...
+  resetStoreVM(this, this.state);
+};
+
+Store.prototype.unregisterModule = function unregisterModule (path) {
+    var this$1 = this;
+
+  if (typeof path === 'string') { path = [path]; }
+
+  if (true) {
+    assert(Array.isArray(path), "module path must be a string or an Array.");
+  }
+
+  this._modules.unregister(path);
+  this._withCommit(function () {
+    var parentState = getNestedState(this$1.state, path.slice(0, -1));
+    Vue.delete(parentState, path[path.length - 1]);
+  });
+  resetStore(this);
+};
+
+Store.prototype.hotUpdate = function hotUpdate (newOptions) {
+  this._modules.update(newOptions);
+  resetStore(this, true);
+};
+
+Store.prototype._withCommit = function _withCommit (fn) {
+  var committing = this._committing;
+  this._committing = true;
+  fn();
+  this._committing = committing;
+};
+
+Object.defineProperties( Store.prototype, prototypeAccessors );
+
+function genericSubscribe (fn, subs) {
+  if (subs.indexOf(fn) < 0) {
+    subs.push(fn);
+  }
+  return function () {
+    var i = subs.indexOf(fn);
+    if (i > -1) {
+      subs.splice(i, 1);
+    }
+  }
+}
+
+function resetStore (store, hot) {
+  store._actions = Object.create(null);
+  store._mutations = Object.create(null);
+  store._wrappedGetters = Object.create(null);
+  store._modulesNamespaceMap = Object.create(null);
+  var state = store.state;
+  // init all modules
+  installModule(store, state, [], store._modules.root, true);
+  // reset vm
+  resetStoreVM(store, state, hot);
+}
+
+function resetStoreVM (store, state, hot) {
+  var oldVm = store._vm;
+
+  // bind store public getters
+  store.getters = {};
+  var wrappedGetters = store._wrappedGetters;
+  var computed = {};
+  forEachValue(wrappedGetters, function (fn, key) {
+    // use computed to leverage its lazy-caching mechanism
+    computed[key] = function () { return fn(store); };
+    Object.defineProperty(store.getters, key, {
+      get: function () { return store._vm[key]; },
+      enumerable: true // for local getters
+    });
+  });
+
+  // use a Vue instance to store the state tree
+  // suppress warnings just in case the user has added
+  // some funky global mixins
+  var silent = Vue.config.silent;
+  Vue.config.silent = true;
+  store._vm = new Vue({
+    data: {
+      $$state: state
+    },
+    computed: computed
+  });
+  Vue.config.silent = silent;
+
+  // enable strict mode for new vm
+  if (store.strict) {
+    enableStrictMode(store);
+  }
+
+  if (oldVm) {
+    if (hot) {
+      // dispatch changes in all subscribed watchers
+      // to force getter re-evaluation for hot reloading.
+      store._withCommit(function () {
+        oldVm._data.$$state = null;
+      });
+    }
+    Vue.nextTick(function () { return oldVm.$destroy(); });
+  }
+}
+
+function installModule (store, rootState, path, module, hot) {
+  var isRoot = !path.length;
+  var namespace = store._modules.getNamespace(path);
+
+  // register in namespace map
+  if (module.namespaced) {
+    store._modulesNamespaceMap[namespace] = module;
+  }
+
+  // set state
+  if (!isRoot && !hot) {
+    var parentState = getNestedState(rootState, path.slice(0, -1));
+    var moduleName = path[path.length - 1];
+    store._withCommit(function () {
+      Vue.set(parentState, moduleName, module.state);
+    });
+  }
+
+  var local = module.context = makeLocalContext(store, namespace, path);
+
+  module.forEachMutation(function (mutation, key) {
+    var namespacedType = namespace + key;
+    registerMutation(store, namespacedType, mutation, local);
+  });
+
+  module.forEachAction(function (action, key) {
+    var type = action.root ? key : namespace + key;
+    var handler = action.handler || action;
+    registerAction(store, type, handler, local);
+  });
+
+  module.forEachGetter(function (getter, key) {
+    var namespacedType = namespace + key;
+    registerGetter(store, namespacedType, getter, local);
+  });
+
+  module.forEachChild(function (child, key) {
+    installModule(store, rootState, path.concat(key), child, hot);
+  });
+}
+
+/**
+ * make localized dispatch, commit, getters and state
+ * if there is no namespace, just use root ones
+ */
+function makeLocalContext (store, namespace, path) {
+  var noNamespace = namespace === '';
+
+  var local = {
+    dispatch: noNamespace ? store.dispatch : function (_type, _payload, _options) {
+      var args = unifyObjectStyle(_type, _payload, _options);
+      var payload = args.payload;
+      var options = args.options;
+      var type = args.type;
+
+      if (!options || !options.root) {
+        type = namespace + type;
+        if ("development" !== 'production' && !store._actions[type]) {
+          console.error(("[vuex] unknown local action type: " + (args.type) + ", global type: " + type));
+          return
+        }
+      }
+
+      return store.dispatch(type, payload)
+    },
+
+    commit: noNamespace ? store.commit : function (_type, _payload, _options) {
+      var args = unifyObjectStyle(_type, _payload, _options);
+      var payload = args.payload;
+      var options = args.options;
+      var type = args.type;
+
+      if (!options || !options.root) {
+        type = namespace + type;
+        if ("development" !== 'production' && !store._mutations[type]) {
+          console.error(("[vuex] unknown local mutation type: " + (args.type) + ", global type: " + type));
+          return
+        }
+      }
+
+      store.commit(type, payload, options);
+    }
+  };
+
+  // getters and state object must be gotten lazily
+  // because they will be changed by vm update
+  Object.defineProperties(local, {
+    getters: {
+      get: noNamespace
+        ? function () { return store.getters; }
+        : function () { return makeLocalGetters(store, namespace); }
+    },
+    state: {
+      get: function () { return getNestedState(store.state, path); }
+    }
+  });
+
+  return local
+}
+
+function makeLocalGetters (store, namespace) {
+  var gettersProxy = {};
+
+  var splitPos = namespace.length;
+  Object.keys(store.getters).forEach(function (type) {
+    // skip if the target getter is not match this namespace
+    if (type.slice(0, splitPos) !== namespace) { return }
+
+    // extract local getter type
+    var localType = type.slice(splitPos);
+
+    // Add a port to the getters proxy.
+    // Define as getter property because
+    // we do not want to evaluate the getters in this time.
+    Object.defineProperty(gettersProxy, localType, {
+      get: function () { return store.getters[type]; },
+      enumerable: true
+    });
+  });
+
+  return gettersProxy
+}
+
+function registerMutation (store, type, handler, local) {
+  var entry = store._mutations[type] || (store._mutations[type] = []);
+  entry.push(function wrappedMutationHandler (payload) {
+    handler.call(store, local.state, payload);
+  });
+}
+
+function registerAction (store, type, handler, local) {
+  var entry = store._actions[type] || (store._actions[type] = []);
+  entry.push(function wrappedActionHandler (payload, cb) {
+    var res = handler.call(store, {
+      dispatch: local.dispatch,
+      commit: local.commit,
+      getters: local.getters,
+      state: local.state,
+      rootGetters: store.getters,
+      rootState: store.state
+    }, payload, cb);
+    if (!isPromise(res)) {
+      res = Promise.resolve(res);
+    }
+    if (store._devtoolHook) {
+      return res.catch(function (err) {
+        store._devtoolHook.emit('vuex:error', err);
+        throw err
+      })
+    } else {
+      return res
+    }
+  });
+}
+
+function registerGetter (store, type, rawGetter, local) {
+  if (store._wrappedGetters[type]) {
+    if (true) {
+      console.error(("[vuex] duplicate getter key: " + type));
+    }
+    return
+  }
+  store._wrappedGetters[type] = function wrappedGetter (store) {
+    return rawGetter(
+      local.state, // local state
+      local.getters, // local getters
+      store.state, // root state
+      store.getters // root getters
+    )
+  };
+}
+
+function enableStrictMode (store) {
+  store._vm.$watch(function () { return this._data.$$state }, function () {
+    if (true) {
+      assert(store._committing, "Do not mutate vuex store state outside mutation handlers.");
+    }
+  }, { deep: true, sync: true });
+}
+
+function getNestedState (state, path) {
+  return path.length
+    ? path.reduce(function (state, key) { return state[key]; }, state)
+    : state
+}
+
+function unifyObjectStyle (type, payload, options) {
+  if (isObject(type) && type.type) {
+    options = payload;
+    payload = type;
+    type = type.type;
+  }
+
+  if (true) {
+    assert(typeof type === 'string', ("Expects string as the type, but found " + (typeof type) + "."));
+  }
+
+  return { type: type, payload: payload, options: options }
+}
+
+function install (_Vue) {
+  if (Vue && _Vue === Vue) {
+    if (true) {
+      console.error(
+        '[vuex] already installed. Vue.use(Vuex) should be called only once.'
+      );
+    }
+    return
+  }
+  Vue = _Vue;
+  applyMixin(Vue);
+}
+
+var mapState = normalizeNamespace(function (namespace, states) {
+  var res = {};
+  normalizeMap(states).forEach(function (ref) {
+    var key = ref.key;
+    var val = ref.val;
+
+    res[key] = function mappedState () {
+      var state = this.$store.state;
+      var getters = this.$store.getters;
+      if (namespace) {
+        var module = getModuleByNamespace(this.$store, 'mapState', namespace);
+        if (!module) {
+          return
+        }
+        state = module.context.state;
+        getters = module.context.getters;
+      }
+      return typeof val === 'function'
+        ? val.call(this, state, getters)
+        : state[val]
+    };
+    // mark vuex getter for devtools
+    res[key].vuex = true;
+  });
+  return res
+});
+
+var mapMutations = normalizeNamespace(function (namespace, mutations) {
+  var res = {};
+  normalizeMap(mutations).forEach(function (ref) {
+    var key = ref.key;
+    var val = ref.val;
+
+    res[key] = function mappedMutation () {
+      var args = [], len = arguments.length;
+      while ( len-- ) args[ len ] = arguments[ len ];
+
+      var commit = this.$store.commit;
+      if (namespace) {
+        var module = getModuleByNamespace(this.$store, 'mapMutations', namespace);
+        if (!module) {
+          return
+        }
+        commit = module.context.commit;
+      }
+      return typeof val === 'function'
+        ? val.apply(this, [commit].concat(args))
+        : commit.apply(this.$store, [val].concat(args))
+    };
+  });
+  return res
+});
+
+var mapGetters = normalizeNamespace(function (namespace, getters) {
+  var res = {};
+  normalizeMap(getters).forEach(function (ref) {
+    var key = ref.key;
+    var val = ref.val;
+
+    val = namespace + val;
+    res[key] = function mappedGetter () {
+      if (namespace && !getModuleByNamespace(this.$store, 'mapGetters', namespace)) {
+        return
+      }
+      if ("development" !== 'production' && !(val in this.$store.getters)) {
+        console.error(("[vuex] unknown getter: " + val));
+        return
+      }
+      return this.$store.getters[val]
+    };
+    // mark vuex getter for devtools
+    res[key].vuex = true;
+  });
+  return res
+});
+
+var mapActions = normalizeNamespace(function (namespace, actions) {
+  var res = {};
+  normalizeMap(actions).forEach(function (ref) {
+    var key = ref.key;
+    var val = ref.val;
+
+    res[key] = function mappedAction () {
+      var args = [], len = arguments.length;
+      while ( len-- ) args[ len ] = arguments[ len ];
+
+      var dispatch = this.$store.dispatch;
+      if (namespace) {
+        var module = getModuleByNamespace(this.$store, 'mapActions', namespace);
+        if (!module) {
+          return
+        }
+        dispatch = module.context.dispatch;
+      }
+      return typeof val === 'function'
+        ? val.apply(this, [dispatch].concat(args))
+        : dispatch.apply(this.$store, [val].concat(args))
+    };
+  });
+  return res
+});
+
+var createNamespacedHelpers = function (namespace) { return ({
+  mapState: mapState.bind(null, namespace),
+  mapGetters: mapGetters.bind(null, namespace),
+  mapMutations: mapMutations.bind(null, namespace),
+  mapActions: mapActions.bind(null, namespace)
+}); };
+
+function normalizeMap (map) {
+  return Array.isArray(map)
+    ? map.map(function (key) { return ({ key: key, val: key }); })
+    : Object.keys(map).map(function (key) { return ({ key: key, val: map[key] }); })
+}
+
+function normalizeNamespace (fn) {
+  return function (namespace, map) {
+    if (typeof namespace !== 'string') {
+      map = namespace;
+      namespace = '';
+    } else if (namespace.charAt(namespace.length - 1) !== '/') {
+      namespace += '/';
+    }
+    return fn(namespace, map)
+  }
+}
+
+function getModuleByNamespace (store, helper, namespace) {
+  var module = store._modulesNamespaceMap[namespace];
+  if ("development" !== 'production' && !module) {
+    console.error(("[vuex] module namespace not found in " + helper + "(): " + namespace));
+  }
+  return module
+}
+
+var index_esm = {
+  Store: Store,
+  install: install,
+  version: '3.0.1',
+  mapState: mapState,
+  mapMutations: mapMutations,
+  mapGetters: mapGetters,
+  mapActions: mapActions,
+  createNamespacedHelpers: createNamespacedHelpers
+};
+
+
+/* harmony default export */ __webpack_exports__["a"] = (index_esm);
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(72)
+}
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(74)
+/* template */
+var __vue_template__ = __webpack_require__(75)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/Parallax.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-78f0034e", Component.options)
+  } else {
+    hotAPI.reload("data-v-78f0034e", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {
 
 var utils = __webpack_require__(3);
-var normalizeHeaderName = __webpack_require__(27);
+var normalizeHeaderName = __webpack_require__(31);
 
 var DEFAULT_CONTENT_TYPE = {
   'Content-Type': 'application/x-www-form-urlencoded'
@@ -843,10 +1839,10 @@ function getDefaultAdapter() {
   var adapter;
   if (typeof XMLHttpRequest !== 'undefined') {
     // For browsers use XHR adapter
-    adapter = __webpack_require__(12);
+    adapter = __webpack_require__(14);
   } else if (typeof process !== 'undefined') {
     // For node use HTTP adapter
-    adapter = __webpack_require__(12);
+    adapter = __webpack_require__(14);
   }
   return adapter;
 }
@@ -921,10 +1917,10 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
 module.exports = defaults;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(8)))
 
 /***/ }),
-/* 6 */
+/* 8 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -1114,7 +2110,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12077,955 +13073,61 @@ Vue.compile = compileToFunctions;
 
 module.exports = Vue;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(42).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(46).setImmediate))
 
 /***/ }),
-/* 8 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-/* unused harmony export Store */
-/* unused harmony export install */
-/* unused harmony export mapState */
-/* unused harmony export mapMutations */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return mapGetters; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return mapActions; });
-/* unused harmony export createNamespacedHelpers */
-/**
- * vuex v3.0.1
- * (c) 2017 Evan You
- * @license MIT
- */
-var applyMixin = function (Vue) {
-  var version = Number(Vue.version.split('.')[0]);
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(183)
+}
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(185)
+/* template */
+var __vue_template__ = __webpack_require__(186)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/BotonSubir.vue"
 
-  if (version >= 2) {
-    Vue.mixin({ beforeCreate: vuexInit });
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-45f2d91a", Component.options)
   } else {
-    // override init and inject vuex init procedure
-    // for 1.x backwards compatibility.
-    var _init = Vue.prototype._init;
-    Vue.prototype._init = function (options) {
-      if ( options === void 0 ) options = {};
-
-      options.init = options.init
-        ? [vuexInit].concat(options.init)
-        : vuexInit;
-      _init.call(this, options);
-    };
+    hotAPI.reload("data-v-45f2d91a", Component.options)
   }
-
-  /**
-   * Vuex init hook, injected into each instances init hooks list.
-   */
-
-  function vuexInit () {
-    var options = this.$options;
-    // store injection
-    if (options.store) {
-      this.$store = typeof options.store === 'function'
-        ? options.store()
-        : options.store;
-    } else if (options.parent && options.parent.$store) {
-      this.$store = options.parent.$store;
-    }
-  }
-};
-
-var devtoolHook =
-  typeof window !== 'undefined' &&
-  window.__VUE_DEVTOOLS_GLOBAL_HOOK__;
-
-function devtoolPlugin (store) {
-  if (!devtoolHook) { return }
-
-  store._devtoolHook = devtoolHook;
-
-  devtoolHook.emit('vuex:init', store);
-
-  devtoolHook.on('vuex:travel-to-state', function (targetState) {
-    store.replaceState(targetState);
-  });
-
-  store.subscribe(function (mutation, state) {
-    devtoolHook.emit('vuex:mutation', mutation, state);
-  });
-}
-
-/**
- * Get the first item that pass the test
- * by second argument function
- *
- * @param {Array} list
- * @param {Function} f
- * @return {*}
- */
-/**
- * Deep copy the given object considering circular structure.
- * This function caches all nested objects and its copies.
- * If it detects circular structure, use cached copy to avoid infinite loop.
- *
- * @param {*} obj
- * @param {Array<Object>} cache
- * @return {*}
- */
-
-
-/**
- * forEach for object
- */
-function forEachValue (obj, fn) {
-  Object.keys(obj).forEach(function (key) { return fn(obj[key], key); });
-}
-
-function isObject (obj) {
-  return obj !== null && typeof obj === 'object'
-}
-
-function isPromise (val) {
-  return val && typeof val.then === 'function'
-}
-
-function assert (condition, msg) {
-  if (!condition) { throw new Error(("[vuex] " + msg)) }
-}
-
-var Module = function Module (rawModule, runtime) {
-  this.runtime = runtime;
-  this._children = Object.create(null);
-  this._rawModule = rawModule;
-  var rawState = rawModule.state;
-  this.state = (typeof rawState === 'function' ? rawState() : rawState) || {};
-};
-
-var prototypeAccessors$1 = { namespaced: { configurable: true } };
-
-prototypeAccessors$1.namespaced.get = function () {
-  return !!this._rawModule.namespaced
-};
-
-Module.prototype.addChild = function addChild (key, module) {
-  this._children[key] = module;
-};
-
-Module.prototype.removeChild = function removeChild (key) {
-  delete this._children[key];
-};
-
-Module.prototype.getChild = function getChild (key) {
-  return this._children[key]
-};
-
-Module.prototype.update = function update (rawModule) {
-  this._rawModule.namespaced = rawModule.namespaced;
-  if (rawModule.actions) {
-    this._rawModule.actions = rawModule.actions;
-  }
-  if (rawModule.mutations) {
-    this._rawModule.mutations = rawModule.mutations;
-  }
-  if (rawModule.getters) {
-    this._rawModule.getters = rawModule.getters;
-  }
-};
-
-Module.prototype.forEachChild = function forEachChild (fn) {
-  forEachValue(this._children, fn);
-};
-
-Module.prototype.forEachGetter = function forEachGetter (fn) {
-  if (this._rawModule.getters) {
-    forEachValue(this._rawModule.getters, fn);
-  }
-};
-
-Module.prototype.forEachAction = function forEachAction (fn) {
-  if (this._rawModule.actions) {
-    forEachValue(this._rawModule.actions, fn);
-  }
-};
-
-Module.prototype.forEachMutation = function forEachMutation (fn) {
-  if (this._rawModule.mutations) {
-    forEachValue(this._rawModule.mutations, fn);
-  }
-};
-
-Object.defineProperties( Module.prototype, prototypeAccessors$1 );
-
-var ModuleCollection = function ModuleCollection (rawRootModule) {
-  // register root module (Vuex.Store options)
-  this.register([], rawRootModule, false);
-};
-
-ModuleCollection.prototype.get = function get (path) {
-  return path.reduce(function (module, key) {
-    return module.getChild(key)
-  }, this.root)
-};
-
-ModuleCollection.prototype.getNamespace = function getNamespace (path) {
-  var module = this.root;
-  return path.reduce(function (namespace, key) {
-    module = module.getChild(key);
-    return namespace + (module.namespaced ? key + '/' : '')
-  }, '')
-};
-
-ModuleCollection.prototype.update = function update$1 (rawRootModule) {
-  update([], this.root, rawRootModule);
-};
-
-ModuleCollection.prototype.register = function register (path, rawModule, runtime) {
-    var this$1 = this;
-    if ( runtime === void 0 ) runtime = true;
-
-  if (true) {
-    assertRawModule(path, rawModule);
-  }
-
-  var newModule = new Module(rawModule, runtime);
-  if (path.length === 0) {
-    this.root = newModule;
-  } else {
-    var parent = this.get(path.slice(0, -1));
-    parent.addChild(path[path.length - 1], newModule);
-  }
-
-  // register nested modules
-  if (rawModule.modules) {
-    forEachValue(rawModule.modules, function (rawChildModule, key) {
-      this$1.register(path.concat(key), rawChildModule, runtime);
-    });
-  }
-};
-
-ModuleCollection.prototype.unregister = function unregister (path) {
-  var parent = this.get(path.slice(0, -1));
-  var key = path[path.length - 1];
-  if (!parent.getChild(key).runtime) { return }
-
-  parent.removeChild(key);
-};
-
-function update (path, targetModule, newModule) {
-  if (true) {
-    assertRawModule(path, newModule);
-  }
-
-  // update target module
-  targetModule.update(newModule);
-
-  // update nested modules
-  if (newModule.modules) {
-    for (var key in newModule.modules) {
-      if (!targetModule.getChild(key)) {
-        if (true) {
-          console.warn(
-            "[vuex] trying to add a new module '" + key + "' on hot reloading, " +
-            'manual reload is needed'
-          );
-        }
-        return
-      }
-      update(
-        path.concat(key),
-        targetModule.getChild(key),
-        newModule.modules[key]
-      );
-    }
-  }
-}
-
-var functionAssert = {
-  assert: function (value) { return typeof value === 'function'; },
-  expected: 'function'
-};
-
-var objectAssert = {
-  assert: function (value) { return typeof value === 'function' ||
-    (typeof value === 'object' && typeof value.handler === 'function'); },
-  expected: 'function or object with "handler" function'
-};
-
-var assertTypes = {
-  getters: functionAssert,
-  mutations: functionAssert,
-  actions: objectAssert
-};
-
-function assertRawModule (path, rawModule) {
-  Object.keys(assertTypes).forEach(function (key) {
-    if (!rawModule[key]) { return }
-
-    var assertOptions = assertTypes[key];
-
-    forEachValue(rawModule[key], function (value, type) {
-      assert(
-        assertOptions.assert(value),
-        makeAssertionMessage(path, key, type, value, assertOptions.expected)
-      );
-    });
-  });
-}
-
-function makeAssertionMessage (path, key, type, value, expected) {
-  var buf = key + " should be " + expected + " but \"" + key + "." + type + "\"";
-  if (path.length > 0) {
-    buf += " in module \"" + (path.join('.')) + "\"";
-  }
-  buf += " is " + (JSON.stringify(value)) + ".";
-  return buf
-}
-
-var Vue; // bind on install
-
-var Store = function Store (options) {
-  var this$1 = this;
-  if ( options === void 0 ) options = {};
-
-  // Auto install if it is not done yet and `window` has `Vue`.
-  // To allow users to avoid auto-installation in some cases,
-  // this code should be placed here. See #731
-  if (!Vue && typeof window !== 'undefined' && window.Vue) {
-    install(window.Vue);
-  }
-
-  if (true) {
-    assert(Vue, "must call Vue.use(Vuex) before creating a store instance.");
-    assert(typeof Promise !== 'undefined', "vuex requires a Promise polyfill in this browser.");
-    assert(this instanceof Store, "Store must be called with the new operator.");
-  }
-
-  var plugins = options.plugins; if ( plugins === void 0 ) plugins = [];
-  var strict = options.strict; if ( strict === void 0 ) strict = false;
-
-  var state = options.state; if ( state === void 0 ) state = {};
-  if (typeof state === 'function') {
-    state = state() || {};
-  }
-
-  // store internal state
-  this._committing = false;
-  this._actions = Object.create(null);
-  this._actionSubscribers = [];
-  this._mutations = Object.create(null);
-  this._wrappedGetters = Object.create(null);
-  this._modules = new ModuleCollection(options);
-  this._modulesNamespaceMap = Object.create(null);
-  this._subscribers = [];
-  this._watcherVM = new Vue();
-
-  // bind commit and dispatch to self
-  var store = this;
-  var ref = this;
-  var dispatch = ref.dispatch;
-  var commit = ref.commit;
-  this.dispatch = function boundDispatch (type, payload) {
-    return dispatch.call(store, type, payload)
-  };
-  this.commit = function boundCommit (type, payload, options) {
-    return commit.call(store, type, payload, options)
-  };
-
-  // strict mode
-  this.strict = strict;
-
-  // init root module.
-  // this also recursively registers all sub-modules
-  // and collects all module getters inside this._wrappedGetters
-  installModule(this, state, [], this._modules.root);
-
-  // initialize the store vm, which is responsible for the reactivity
-  // (also registers _wrappedGetters as computed properties)
-  resetStoreVM(this, state);
-
-  // apply plugins
-  plugins.forEach(function (plugin) { return plugin(this$1); });
-
-  if (Vue.config.devtools) {
-    devtoolPlugin(this);
-  }
-};
-
-var prototypeAccessors = { state: { configurable: true } };
-
-prototypeAccessors.state.get = function () {
-  return this._vm._data.$$state
-};
-
-prototypeAccessors.state.set = function (v) {
-  if (true) {
-    assert(false, "Use store.replaceState() to explicit replace store state.");
-  }
-};
-
-Store.prototype.commit = function commit (_type, _payload, _options) {
-    var this$1 = this;
-
-  // check object-style commit
-  var ref = unifyObjectStyle(_type, _payload, _options);
-    var type = ref.type;
-    var payload = ref.payload;
-    var options = ref.options;
-
-  var mutation = { type: type, payload: payload };
-  var entry = this._mutations[type];
-  if (!entry) {
-    if (true) {
-      console.error(("[vuex] unknown mutation type: " + type));
-    }
-    return
-  }
-  this._withCommit(function () {
-    entry.forEach(function commitIterator (handler) {
-      handler(payload);
-    });
-  });
-  this._subscribers.forEach(function (sub) { return sub(mutation, this$1.state); });
-
-  if (
-    "development" !== 'production' &&
-    options && options.silent
-  ) {
-    console.warn(
-      "[vuex] mutation type: " + type + ". Silent option has been removed. " +
-      'Use the filter functionality in the vue-devtools'
-    );
-  }
-};
-
-Store.prototype.dispatch = function dispatch (_type, _payload) {
-    var this$1 = this;
-
-  // check object-style dispatch
-  var ref = unifyObjectStyle(_type, _payload);
-    var type = ref.type;
-    var payload = ref.payload;
-
-  var action = { type: type, payload: payload };
-  var entry = this._actions[type];
-  if (!entry) {
-    if (true) {
-      console.error(("[vuex] unknown action type: " + type));
-    }
-    return
-  }
-
-  this._actionSubscribers.forEach(function (sub) { return sub(action, this$1.state); });
-
-  return entry.length > 1
-    ? Promise.all(entry.map(function (handler) { return handler(payload); }))
-    : entry[0](payload)
-};
-
-Store.prototype.subscribe = function subscribe (fn) {
-  return genericSubscribe(fn, this._subscribers)
-};
-
-Store.prototype.subscribeAction = function subscribeAction (fn) {
-  return genericSubscribe(fn, this._actionSubscribers)
-};
-
-Store.prototype.watch = function watch (getter, cb, options) {
-    var this$1 = this;
-
-  if (true) {
-    assert(typeof getter === 'function', "store.watch only accepts a function.");
-  }
-  return this._watcherVM.$watch(function () { return getter(this$1.state, this$1.getters); }, cb, options)
-};
-
-Store.prototype.replaceState = function replaceState (state) {
-    var this$1 = this;
-
-  this._withCommit(function () {
-    this$1._vm._data.$$state = state;
-  });
-};
-
-Store.prototype.registerModule = function registerModule (path, rawModule, options) {
-    if ( options === void 0 ) options = {};
-
-  if (typeof path === 'string') { path = [path]; }
-
-  if (true) {
-    assert(Array.isArray(path), "module path must be a string or an Array.");
-    assert(path.length > 0, 'cannot register the root module by using registerModule.');
-  }
-
-  this._modules.register(path, rawModule);
-  installModule(this, this.state, path, this._modules.get(path), options.preserveState);
-  // reset store to update getters...
-  resetStoreVM(this, this.state);
-};
-
-Store.prototype.unregisterModule = function unregisterModule (path) {
-    var this$1 = this;
-
-  if (typeof path === 'string') { path = [path]; }
-
-  if (true) {
-    assert(Array.isArray(path), "module path must be a string or an Array.");
-  }
-
-  this._modules.unregister(path);
-  this._withCommit(function () {
-    var parentState = getNestedState(this$1.state, path.slice(0, -1));
-    Vue.delete(parentState, path[path.length - 1]);
-  });
-  resetStore(this);
-};
-
-Store.prototype.hotUpdate = function hotUpdate (newOptions) {
-  this._modules.update(newOptions);
-  resetStore(this, true);
-};
-
-Store.prototype._withCommit = function _withCommit (fn) {
-  var committing = this._committing;
-  this._committing = true;
-  fn();
-  this._committing = committing;
-};
-
-Object.defineProperties( Store.prototype, prototypeAccessors );
-
-function genericSubscribe (fn, subs) {
-  if (subs.indexOf(fn) < 0) {
-    subs.push(fn);
-  }
-  return function () {
-    var i = subs.indexOf(fn);
-    if (i > -1) {
-      subs.splice(i, 1);
-    }
-  }
-}
-
-function resetStore (store, hot) {
-  store._actions = Object.create(null);
-  store._mutations = Object.create(null);
-  store._wrappedGetters = Object.create(null);
-  store._modulesNamespaceMap = Object.create(null);
-  var state = store.state;
-  // init all modules
-  installModule(store, state, [], store._modules.root, true);
-  // reset vm
-  resetStoreVM(store, state, hot);
-}
-
-function resetStoreVM (store, state, hot) {
-  var oldVm = store._vm;
-
-  // bind store public getters
-  store.getters = {};
-  var wrappedGetters = store._wrappedGetters;
-  var computed = {};
-  forEachValue(wrappedGetters, function (fn, key) {
-    // use computed to leverage its lazy-caching mechanism
-    computed[key] = function () { return fn(store); };
-    Object.defineProperty(store.getters, key, {
-      get: function () { return store._vm[key]; },
-      enumerable: true // for local getters
-    });
-  });
-
-  // use a Vue instance to store the state tree
-  // suppress warnings just in case the user has added
-  // some funky global mixins
-  var silent = Vue.config.silent;
-  Vue.config.silent = true;
-  store._vm = new Vue({
-    data: {
-      $$state: state
-    },
-    computed: computed
-  });
-  Vue.config.silent = silent;
-
-  // enable strict mode for new vm
-  if (store.strict) {
-    enableStrictMode(store);
-  }
-
-  if (oldVm) {
-    if (hot) {
-      // dispatch changes in all subscribed watchers
-      // to force getter re-evaluation for hot reloading.
-      store._withCommit(function () {
-        oldVm._data.$$state = null;
-      });
-    }
-    Vue.nextTick(function () { return oldVm.$destroy(); });
-  }
-}
-
-function installModule (store, rootState, path, module, hot) {
-  var isRoot = !path.length;
-  var namespace = store._modules.getNamespace(path);
-
-  // register in namespace map
-  if (module.namespaced) {
-    store._modulesNamespaceMap[namespace] = module;
-  }
-
-  // set state
-  if (!isRoot && !hot) {
-    var parentState = getNestedState(rootState, path.slice(0, -1));
-    var moduleName = path[path.length - 1];
-    store._withCommit(function () {
-      Vue.set(parentState, moduleName, module.state);
-    });
-  }
-
-  var local = module.context = makeLocalContext(store, namespace, path);
-
-  module.forEachMutation(function (mutation, key) {
-    var namespacedType = namespace + key;
-    registerMutation(store, namespacedType, mutation, local);
-  });
-
-  module.forEachAction(function (action, key) {
-    var type = action.root ? key : namespace + key;
-    var handler = action.handler || action;
-    registerAction(store, type, handler, local);
-  });
-
-  module.forEachGetter(function (getter, key) {
-    var namespacedType = namespace + key;
-    registerGetter(store, namespacedType, getter, local);
-  });
-
-  module.forEachChild(function (child, key) {
-    installModule(store, rootState, path.concat(key), child, hot);
-  });
-}
-
-/**
- * make localized dispatch, commit, getters and state
- * if there is no namespace, just use root ones
- */
-function makeLocalContext (store, namespace, path) {
-  var noNamespace = namespace === '';
-
-  var local = {
-    dispatch: noNamespace ? store.dispatch : function (_type, _payload, _options) {
-      var args = unifyObjectStyle(_type, _payload, _options);
-      var payload = args.payload;
-      var options = args.options;
-      var type = args.type;
-
-      if (!options || !options.root) {
-        type = namespace + type;
-        if ("development" !== 'production' && !store._actions[type]) {
-          console.error(("[vuex] unknown local action type: " + (args.type) + ", global type: " + type));
-          return
-        }
-      }
-
-      return store.dispatch(type, payload)
-    },
-
-    commit: noNamespace ? store.commit : function (_type, _payload, _options) {
-      var args = unifyObjectStyle(_type, _payload, _options);
-      var payload = args.payload;
-      var options = args.options;
-      var type = args.type;
-
-      if (!options || !options.root) {
-        type = namespace + type;
-        if ("development" !== 'production' && !store._mutations[type]) {
-          console.error(("[vuex] unknown local mutation type: " + (args.type) + ", global type: " + type));
-          return
-        }
-      }
-
-      store.commit(type, payload, options);
-    }
-  };
-
-  // getters and state object must be gotten lazily
-  // because they will be changed by vm update
-  Object.defineProperties(local, {
-    getters: {
-      get: noNamespace
-        ? function () { return store.getters; }
-        : function () { return makeLocalGetters(store, namespace); }
-    },
-    state: {
-      get: function () { return getNestedState(store.state, path); }
-    }
-  });
-
-  return local
-}
-
-function makeLocalGetters (store, namespace) {
-  var gettersProxy = {};
-
-  var splitPos = namespace.length;
-  Object.keys(store.getters).forEach(function (type) {
-    // skip if the target getter is not match this namespace
-    if (type.slice(0, splitPos) !== namespace) { return }
-
-    // extract local getter type
-    var localType = type.slice(splitPos);
-
-    // Add a port to the getters proxy.
-    // Define as getter property because
-    // we do not want to evaluate the getters in this time.
-    Object.defineProperty(gettersProxy, localType, {
-      get: function () { return store.getters[type]; },
-      enumerable: true
-    });
-  });
-
-  return gettersProxy
-}
-
-function registerMutation (store, type, handler, local) {
-  var entry = store._mutations[type] || (store._mutations[type] = []);
-  entry.push(function wrappedMutationHandler (payload) {
-    handler.call(store, local.state, payload);
-  });
-}
-
-function registerAction (store, type, handler, local) {
-  var entry = store._actions[type] || (store._actions[type] = []);
-  entry.push(function wrappedActionHandler (payload, cb) {
-    var res = handler.call(store, {
-      dispatch: local.dispatch,
-      commit: local.commit,
-      getters: local.getters,
-      state: local.state,
-      rootGetters: store.getters,
-      rootState: store.state
-    }, payload, cb);
-    if (!isPromise(res)) {
-      res = Promise.resolve(res);
-    }
-    if (store._devtoolHook) {
-      return res.catch(function (err) {
-        store._devtoolHook.emit('vuex:error', err);
-        throw err
-      })
-    } else {
-      return res
-    }
-  });
-}
-
-function registerGetter (store, type, rawGetter, local) {
-  if (store._wrappedGetters[type]) {
-    if (true) {
-      console.error(("[vuex] duplicate getter key: " + type));
-    }
-    return
-  }
-  store._wrappedGetters[type] = function wrappedGetter (store) {
-    return rawGetter(
-      local.state, // local state
-      local.getters, // local getters
-      store.state, // root state
-      store.getters // root getters
-    )
-  };
-}
-
-function enableStrictMode (store) {
-  store._vm.$watch(function () { return this._data.$$state }, function () {
-    if (true) {
-      assert(store._committing, "Do not mutate vuex store state outside mutation handlers.");
-    }
-  }, { deep: true, sync: true });
-}
-
-function getNestedState (state, path) {
-  return path.length
-    ? path.reduce(function (state, key) { return state[key]; }, state)
-    : state
-}
-
-function unifyObjectStyle (type, payload, options) {
-  if (isObject(type) && type.type) {
-    options = payload;
-    payload = type;
-    type = type.type;
-  }
-
-  if (true) {
-    assert(typeof type === 'string', ("Expects string as the type, but found " + (typeof type) + "."));
-  }
-
-  return { type: type, payload: payload, options: options }
-}
-
-function install (_Vue) {
-  if (Vue && _Vue === Vue) {
-    if (true) {
-      console.error(
-        '[vuex] already installed. Vue.use(Vuex) should be called only once.'
-      );
-    }
-    return
-  }
-  Vue = _Vue;
-  applyMixin(Vue);
-}
-
-var mapState = normalizeNamespace(function (namespace, states) {
-  var res = {};
-  normalizeMap(states).forEach(function (ref) {
-    var key = ref.key;
-    var val = ref.val;
-
-    res[key] = function mappedState () {
-      var state = this.$store.state;
-      var getters = this.$store.getters;
-      if (namespace) {
-        var module = getModuleByNamespace(this.$store, 'mapState', namespace);
-        if (!module) {
-          return
-        }
-        state = module.context.state;
-        getters = module.context.getters;
-      }
-      return typeof val === 'function'
-        ? val.call(this, state, getters)
-        : state[val]
-    };
-    // mark vuex getter for devtools
-    res[key].vuex = true;
-  });
-  return res
-});
-
-var mapMutations = normalizeNamespace(function (namespace, mutations) {
-  var res = {};
-  normalizeMap(mutations).forEach(function (ref) {
-    var key = ref.key;
-    var val = ref.val;
-
-    res[key] = function mappedMutation () {
-      var args = [], len = arguments.length;
-      while ( len-- ) args[ len ] = arguments[ len ];
-
-      var commit = this.$store.commit;
-      if (namespace) {
-        var module = getModuleByNamespace(this.$store, 'mapMutations', namespace);
-        if (!module) {
-          return
-        }
-        commit = module.context.commit;
-      }
-      return typeof val === 'function'
-        ? val.apply(this, [commit].concat(args))
-        : commit.apply(this.$store, [val].concat(args))
-    };
-  });
-  return res
-});
-
-var mapGetters = normalizeNamespace(function (namespace, getters) {
-  var res = {};
-  normalizeMap(getters).forEach(function (ref) {
-    var key = ref.key;
-    var val = ref.val;
-
-    val = namespace + val;
-    res[key] = function mappedGetter () {
-      if (namespace && !getModuleByNamespace(this.$store, 'mapGetters', namespace)) {
-        return
-      }
-      if ("development" !== 'production' && !(val in this.$store.getters)) {
-        console.error(("[vuex] unknown getter: " + val));
-        return
-      }
-      return this.$store.getters[val]
-    };
-    // mark vuex getter for devtools
-    res[key].vuex = true;
-  });
-  return res
-});
-
-var mapActions = normalizeNamespace(function (namespace, actions) {
-  var res = {};
-  normalizeMap(actions).forEach(function (ref) {
-    var key = ref.key;
-    var val = ref.val;
-
-    res[key] = function mappedAction () {
-      var args = [], len = arguments.length;
-      while ( len-- ) args[ len ] = arguments[ len ];
-
-      var dispatch = this.$store.dispatch;
-      if (namespace) {
-        var module = getModuleByNamespace(this.$store, 'mapActions', namespace);
-        if (!module) {
-          return
-        }
-        dispatch = module.context.dispatch;
-      }
-      return typeof val === 'function'
-        ? val.apply(this, [dispatch].concat(args))
-        : dispatch.apply(this.$store, [val].concat(args))
-    };
-  });
-  return res
-});
-
-var createNamespacedHelpers = function (namespace) { return ({
-  mapState: mapState.bind(null, namespace),
-  mapGetters: mapGetters.bind(null, namespace),
-  mapMutations: mapMutations.bind(null, namespace),
-  mapActions: mapActions.bind(null, namespace)
-}); };
-
-function normalizeMap (map) {
-  return Array.isArray(map)
-    ? map.map(function (key) { return ({ key: key, val: key }); })
-    : Object.keys(map).map(function (key) { return ({ key: key, val: map[key] }); })
-}
-
-function normalizeNamespace (fn) {
-  return function (namespace, map) {
-    if (typeof namespace !== 'string') {
-      map = namespace;
-      namespace = '';
-    } else if (namespace.charAt(namespace.length - 1) !== '/') {
-      namespace += '/';
-    }
-    return fn(namespace, map)
-  }
-}
-
-function getModuleByNamespace (store, helper, namespace) {
-  var module = store._modulesNamespaceMap[namespace];
-  if ("development" !== 'production' && !module) {
-    console.error(("[vuex] module namespace not found in " + helper + "(): " + namespace));
-  }
-  return module
-}
-
-var index_esm = {
-  Store: Store,
-  install: install,
-  version: '3.0.1',
-  mapState: mapState,
-  mapMutations: mapMutations,
-  mapGetters: mapGetters,
-  mapActions: mapActions,
-  createNamespacedHelpers: createNamespacedHelpers
-};
-
-
-/* harmony default export */ __webpack_exports__["a"] = (index_esm);
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
 
 
 /***/ }),
-/* 9 */
+/* 11 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -15554,7 +15656,7 @@ Popper.Defaults = Defaults;
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(4)))
 
 /***/ }),
-/* 10 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -25925,7 +26027,7 @@ return jQuery;
 
 
 /***/ }),
-/* 11 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -25943,19 +26045,19 @@ module.exports = function bind(fn, thisArg) {
 
 
 /***/ }),
-/* 12 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(3);
-var settle = __webpack_require__(28);
-var buildURL = __webpack_require__(30);
-var parseHeaders = __webpack_require__(31);
-var isURLSameOrigin = __webpack_require__(32);
-var createError = __webpack_require__(13);
-var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(33);
+var settle = __webpack_require__(32);
+var buildURL = __webpack_require__(34);
+var parseHeaders = __webpack_require__(35);
+var isURLSameOrigin = __webpack_require__(36);
+var createError = __webpack_require__(15);
+var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(37);
 
 module.exports = function xhrAdapter(config) {
   return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -26052,7 +26154,7 @@ module.exports = function xhrAdapter(config) {
     // This is only done if running in a standard browser environment.
     // Specifically not if we're in a web worker, or react-native.
     if (utils.isStandardBrowserEnv()) {
-      var cookies = __webpack_require__(34);
+      var cookies = __webpack_require__(38);
 
       // Add xsrf header
       var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
@@ -26130,13 +26232,13 @@ module.exports = function xhrAdapter(config) {
 
 
 /***/ }),
-/* 13 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var enhanceError = __webpack_require__(29);
+var enhanceError = __webpack_require__(33);
 
 /**
  * Create an Error with the specified message, config, error code, request and response.
@@ -26155,7 +26257,7 @@ module.exports = function createError(message, config, code, request, response) 
 
 
 /***/ }),
-/* 14 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -26167,7 +26269,7 @@ module.exports = function isCancel(value) {
 
 
 /***/ }),
-/* 15 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -26193,19 +26295,61 @@ module.exports = Cancel;
 
 
 /***/ }),
-/* 16 */
+/* 18 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony default export */ __webpack_exports__["a"] = ({
+
+  // api requests for noticias
+  getNoticias: function getNoticias() {
+    return axios.get('/api/noticias').then(function (res) {
+      return res.data;
+    });
+  },
+  addNoticia: function addNoticia(noticia) {
+    return axios.post('/api/noticias', noticia).then(function (res) {
+      return res.data;
+    });
+  },
+  deleteNoticia: function deleteNoticia(id) {
+    return axios.delete('/api/noticias/' + id).then(function (res) {
+      return res.data;
+    });
+  },
+  updateNoticia: function updateNoticia(noticia) {
+    return axios.put('/api/noticias/' + noticia.id, noticia).then(function (res) {
+      return res.data;
+    });
+  },
+
+
+  //api requests for organismos
+  getOrganismosByNombreAndAutoridad: function getOrganismosByNombreAndAutoridad(organismo) {
+    return axios.post('/api/organismos/get', organismo).then(function (res) {
+      return res.data;
+    });
+  }
+});
+
+/***/ }),
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(0)
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(86)
+}
+var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(64)
+var __vue_script__ = __webpack_require__(88)
 /* template */
-var __vue_template__ = __webpack_require__(126)
+var __vue_template__ = __webpack_require__(89)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
-var __vue_styles__ = null
+var __vue_styles__ = injectStyle
 /* scopeId */
 var __vue_scopeId__ = null
 /* moduleIdentifier (server only) */
@@ -26218,7 +26362,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources/assets/js/views/MainPage.vue"
+Component.options.__file = "resources/assets/js/components/Flyers.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -26227,9 +26371,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-1814d68a", Component.options)
+    hotAPI.createRecord("data-v-4a9e178a", Component.options)
   } else {
-    hotAPI.reload("data-v-1814d68a", Component.options)
+    hotAPI.reload("data-v-4a9e178a", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true
@@ -26240,34 +26384,91 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 17 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(18);
-module.exports = __webpack_require__(127);
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(192)
+}
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(194)
+/* template */
+var __vue_template__ = __webpack_require__(195)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/NavbarLateral.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-99c57d40", Component.options)
+  } else {
+    hotAPI.reload("data-v-99c57d40", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
 
 
 /***/ }),
-/* 18 */
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(22);
+module.exports = __webpack_require__(207);
+
+
+/***/ }),
+/* 22 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vue_router__ = __webpack_require__(44);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vue_snotify__ = __webpack_require__(45);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_vue_snotify_styles_dark_css__ = __webpack_require__(46);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vue_router__ = __webpack_require__(48);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vue_snotify__ = __webpack_require__(49);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_vue_snotify_styles_dark_css__ = __webpack_require__(50);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_vue_snotify_styles_dark_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_vue_snotify_styles_dark_css__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__store__ = __webpack_require__(50);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__views_App__ = __webpack_require__(53);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__store__ = __webpack_require__(54);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__views_App__ = __webpack_require__(57);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__views_App___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__views_App__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__views_MainPage__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__views_MainPage__ = __webpack_require__(68);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__views_MainPage___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__views_MainPage__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__views_AdminPage__ = __webpack_require__(130);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__views_AdminPage__ = __webpack_require__(131);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__views_AdminPage___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7__views_AdminPage__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__views_NoticiasABM__ = __webpack_require__(140);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__views_NoticiasABM__ = __webpack_require__(136);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__views_NoticiasABM___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8__views_NoticiasABM__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__views_GobiernoPage__ = __webpack_require__(149);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__views_GobiernoPage___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9__views_GobiernoPage__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__views_ProvinciaPage__ = __webpack_require__(188);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__views_ProvinciaPage___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_10__views_ProvinciaPage__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__views_TransparenciaPage__ = __webpack_require__(197);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__views_TransparenciaPage___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_11__views_TransparenciaPage__);
 
 /**
  * First we will load all of this project's JavaScript dependencies which
@@ -26275,7 +26476,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  * building robust, powerful web applications using Vue and Laravel.
  */
 
-__webpack_require__(19);
+__webpack_require__(23);
 
 // window.Vue = require('vue');
 //
@@ -26306,12 +26507,27 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_2_vue_
 
 
 
+
+
+
 var router = new __WEBPACK_IMPORTED_MODULE_1_vue_router__["a" /* default */]({
     mode: 'history',
     routes: [{
         path: '/',
         name: 'main',
         component: __WEBPACK_IMPORTED_MODULE_6__views_MainPage___default.a
+    }, {
+        path: '/gobierno',
+        name: 'gobierno',
+        component: __WEBPACK_IMPORTED_MODULE_9__views_GobiernoPage___default.a
+    }, {
+        path: '/provincia',
+        name: 'provincia',
+        component: __WEBPACK_IMPORTED_MODULE_10__views_ProvinciaPage___default.a
+    }, {
+        path: '/transparencia',
+        name: 'transparencia',
+        component: __WEBPACK_IMPORTED_MODULE_11__views_TransparenciaPage___default.a
     }, {
         path: '/admin',
         name: 'admin',
@@ -26320,7 +26536,6 @@ var router = new __WEBPACK_IMPORTED_MODULE_1_vue_router__["a" /* default */]({
         path: '/noticiasabm',
         name: 'noticiasabm',
         component: __WEBPACK_IMPORTED_MODULE_8__views_NoticiasABM___default.a
-
     }]
 });
 
@@ -26333,12 +26548,12 @@ var app = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
 });
 
 /***/ }),
-/* 19 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-window._ = __webpack_require__(20);
-window.Popper = __webpack_require__(9).default;
+window._ = __webpack_require__(24);
+window.Popper = __webpack_require__(11).default;
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
@@ -26347,9 +26562,9 @@ window.Popper = __webpack_require__(9).default;
  */
 
 try {
-  window.$ = window.jQuery = __webpack_require__(10);
+  window.$ = window.jQuery = __webpack_require__(12);
 
-  __webpack_require__(22);
+  __webpack_require__(26);
 } catch (e) {}
 
 /**
@@ -26358,7 +26573,7 @@ try {
  * CSRF token as a header based on the value of the "XSRF" token cookie.
  */
 
-window.axios = __webpack_require__(23);
+window.axios = __webpack_require__(27);
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
@@ -26394,7 +26609,7 @@ if (token) {
 // });
 
 /***/ }),
-/* 20 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, module) {var __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -43504,10 +43719,10 @@ if (token) {
   }
 }.call(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(21)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(25)(module)))
 
 /***/ }),
-/* 21 */
+/* 25 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -43535,7 +43750,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 22 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*!
@@ -43544,7 +43759,7 @@ module.exports = function(module) {
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
   */
 (function (global, factory) {
-   true ? factory(exports, __webpack_require__(10), __webpack_require__(9)) :
+   true ? factory(exports, __webpack_require__(12), __webpack_require__(11)) :
   typeof define === 'function' && define.amd ? define(['exports', 'jquery', 'popper.js'], factory) :
   (factory((global.bootstrap = {}),global.jQuery,global.Popper));
 }(this, (function (exports,$,Popper) { 'use strict';
@@ -47468,22 +47683,22 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 23 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(24);
+module.exports = __webpack_require__(28);
 
 /***/ }),
-/* 24 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(3);
-var bind = __webpack_require__(11);
-var Axios = __webpack_require__(26);
-var defaults = __webpack_require__(5);
+var bind = __webpack_require__(13);
+var Axios = __webpack_require__(30);
+var defaults = __webpack_require__(7);
 
 /**
  * Create an instance of Axios
@@ -47516,15 +47731,15 @@ axios.create = function create(instanceConfig) {
 };
 
 // Expose Cancel & CancelToken
-axios.Cancel = __webpack_require__(15);
-axios.CancelToken = __webpack_require__(40);
-axios.isCancel = __webpack_require__(14);
+axios.Cancel = __webpack_require__(17);
+axios.CancelToken = __webpack_require__(44);
+axios.isCancel = __webpack_require__(16);
 
 // Expose all/spread
 axios.all = function all(promises) {
   return Promise.all(promises);
 };
-axios.spread = __webpack_require__(41);
+axios.spread = __webpack_require__(45);
 
 module.exports = axios;
 
@@ -47533,7 +47748,7 @@ module.exports.default = axios;
 
 
 /***/ }),
-/* 25 */
+/* 29 */
 /***/ (function(module, exports) {
 
 /*!
@@ -47560,16 +47775,16 @@ function isSlowBuffer (obj) {
 
 
 /***/ }),
-/* 26 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var defaults = __webpack_require__(5);
+var defaults = __webpack_require__(7);
 var utils = __webpack_require__(3);
-var InterceptorManager = __webpack_require__(35);
-var dispatchRequest = __webpack_require__(36);
+var InterceptorManager = __webpack_require__(39);
+var dispatchRequest = __webpack_require__(40);
 
 /**
  * Create a new instance of Axios
@@ -47646,7 +47861,7 @@ module.exports = Axios;
 
 
 /***/ }),
-/* 27 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47665,13 +47880,13 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 
 
 /***/ }),
-/* 28 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var createError = __webpack_require__(13);
+var createError = __webpack_require__(15);
 
 /**
  * Resolve or reject a Promise based on response status.
@@ -47698,7 +47913,7 @@ module.exports = function settle(resolve, reject, response) {
 
 
 /***/ }),
-/* 29 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47726,7 +47941,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
 
 
 /***/ }),
-/* 30 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47799,7 +48014,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 
 
 /***/ }),
-/* 31 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47859,7 +48074,7 @@ module.exports = function parseHeaders(headers) {
 
 
 /***/ }),
-/* 32 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47934,7 +48149,7 @@ module.exports = (
 
 
 /***/ }),
-/* 33 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47977,7 +48192,7 @@ module.exports = btoa;
 
 
 /***/ }),
-/* 34 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -48037,7 +48252,7 @@ module.exports = (
 
 
 /***/ }),
-/* 35 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -48096,18 +48311,18 @@ module.exports = InterceptorManager;
 
 
 /***/ }),
-/* 36 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(3);
-var transformData = __webpack_require__(37);
-var isCancel = __webpack_require__(14);
-var defaults = __webpack_require__(5);
-var isAbsoluteURL = __webpack_require__(38);
-var combineURLs = __webpack_require__(39);
+var transformData = __webpack_require__(41);
+var isCancel = __webpack_require__(16);
+var defaults = __webpack_require__(7);
+var isAbsoluteURL = __webpack_require__(42);
+var combineURLs = __webpack_require__(43);
 
 /**
  * Throws a `Cancel` if cancellation has been requested.
@@ -48189,7 +48404,7 @@ module.exports = function dispatchRequest(config) {
 
 
 /***/ }),
-/* 37 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -48216,7 +48431,7 @@ module.exports = function transformData(data, headers, fns) {
 
 
 /***/ }),
-/* 38 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -48237,7 +48452,7 @@ module.exports = function isAbsoluteURL(url) {
 
 
 /***/ }),
-/* 39 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -48258,13 +48473,13 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 
 
 /***/ }),
-/* 40 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var Cancel = __webpack_require__(15);
+var Cancel = __webpack_require__(17);
 
 /**
  * A `CancelToken` is an object that can be used to request cancellation of an operation.
@@ -48322,7 +48537,7 @@ module.exports = CancelToken;
 
 
 /***/ }),
-/* 41 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -48356,7 +48571,7 @@ module.exports = function spread(callback) {
 
 
 /***/ }),
-/* 42 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
@@ -48412,7 +48627,7 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(43);
+__webpack_require__(47);
 // On some exotic environments, it's not clear which object `setimmediate` was
 // able to install onto.  Search each possibility in the same order as the
 // `setimmediate` library.
@@ -48426,7 +48641,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
-/* 43 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -48616,10 +48831,10 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(6)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(8)))
 
 /***/ }),
-/* 44 */
+/* 48 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -51249,14 +51464,14 @@ if (inBrowser && window.Vue) {
 
 
 /***/ }),
-/* 45 */
+/* 49 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(global, process) {/* unused harmony export SnotifyPosition */
 /* unused harmony export SnotifyStyle */
 /* unused harmony export SnotifyToast */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
 /**
  * vue-snotify v3.0.4
@@ -53733,16 +53948,16 @@ if (typeof window !== 'undefined' && window.hasOwnProperty('Vue')) {
 
 /* harmony default export */ __webpack_exports__["a"] = (Plugin);
 
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(4), __webpack_require__(6)))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(4), __webpack_require__(8)))
 
 /***/ }),
-/* 46 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(47);
+var content = __webpack_require__(51);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -53750,7 +53965,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(48)(content, options);
+var update = __webpack_require__(52)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -53767,10 +53982,10 @@ if(false) {
 }
 
 /***/ }),
-/* 47 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
@@ -53781,7 +53996,7 @@ exports.push([module.i, ".snotifyToast {\n  -webkit-animation-fill-mode: both;\n
 
 
 /***/ }),
-/* 48 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -53827,7 +54042,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(49);
+var	fixUrls = __webpack_require__(53);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -54140,7 +54355,7 @@ function updateLink (link, options, obj) {
 
 
 /***/ }),
-/* 49 */
+/* 53 */
 /***/ (function(module, exports) {
 
 
@@ -54235,14 +54450,16 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 50 */
+/* 54 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modules_noticias__ = __webpack_require__(129);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__modules_noticias__ = __webpack_require__(55);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__modules_organismos__ = __webpack_require__(56);
+
 
 
 
@@ -54253,54 +54470,140 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
 
 /* harmony default export */ __webpack_exports__["a"] = (new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
   modules: {
-    noticias: __WEBPACK_IMPORTED_MODULE_2__modules_noticias__["a" /* default */]
+    noticias: __WEBPACK_IMPORTED_MODULE_2__modules_noticias__["a" /* default */],
+    organismos: __WEBPACK_IMPORTED_MODULE_3__modules_organismos__["a" /* default */]
   }
 
 }));
 
 /***/ }),
-/* 51 */,
-/* 52 */
+/* 55 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony default export */ __webpack_exports__["a"] = ({
-  getNoticias: function getNoticias() {
-    return axios.get('/api/noticias').then(function (res) {
-      return res.data;
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__api__ = __webpack_require__(18);
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+
+
+// initial state
+var state = {
+  all: []
+
+  // getters
+};var getters = {
+  allNoticias: function allNoticias(state) {
+    return state.all;
+  }
+
+  // actions
+};var actions = {
+  getAllNoticias: function getAllNoticias(_ref) {
+    var commit = _ref.commit;
+
+    __WEBPACK_IMPORTED_MODULE_0__api__["a" /* default */].getNoticias().then(function (noticias) {
+      return commit('setNoticias', noticias);
     });
   },
-  addNoticia: function addNoticia(noticia) {
-    return axios.post('/api/noticias', noticia).then(function (res) {
-      return res.data;
+  addNoticia: function addNoticia(_ref2, noticia) {
+    var commit = _ref2.commit;
+
+    __WEBPACK_IMPORTED_MODULE_0__api__["a" /* default */].addNoticia(noticia).then(function (_noticia) {
+      return commit('noticiaAdded', _noticia);
     });
   },
-  deleteNoticia: function deleteNoticia(id) {
-    return axios.delete('/api/noticias/' + id).then(function (res) {
-      return res.data;
+  deleteNoticia: function deleteNoticia(_ref3, id) {
+    var commit = _ref3.commit;
+
+    __WEBPACK_IMPORTED_MODULE_0__api__["a" /* default */].deleteNoticia(id).then(function (post) {
+      return commit('noticiaDeleted', post.id);
     });
   },
-  updateNoticia: function updateNoticia(noticia) {
-    return axios.put('/api/noticias/' + noticia.id, noticia).then(function (res) {
-      return res.data;
+  updateNoticia: function updateNoticia(_ref4, noticia) {
+    var commit = _ref4.commit;
+
+    __WEBPACK_IMPORTED_MODULE_0__api__["a" /* default */].updateNoticia(noticia).then(function (noticia) {
+      return commit('noticiaEdited', noticia);
     });
   }
-});
+};
+
+// mutations
+var mutations = {
+  setNoticias: function setNoticias(state, noticias) {
+    state.all = noticias;
+  },
+  noticiaAdded: function noticiaAdded(state, noticia) {
+    state.all = [].concat(_toConsumableArray(state.all), [noticia]);
+  },
+  noticiaDeleted: function noticiaDeleted(state, id) {
+    state.all = state.all.filter(function (noticia) {
+      return noticia.id !== id;
+    });
+  },
+  noticiaEdited: function noticiaEdited(state, noticia) {
+
+    state.all = state.all.map(function (item) {
+      if (item.id === noticia.id) return noticia;else return item;
+    });
+  }
+};
+
+/* harmony default export */ __webpack_exports__["a"] = ({ state: state, getters: getters, actions: actions, mutations: mutations });
 
 /***/ }),
-/* 53 */
+/* 56 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__api__ = __webpack_require__(18);
+
+
+// initial state
+var state = {
+  all: [],
+  errors: []
+
+  // getters
+};var getters = {
+  allOrganismos: function allOrganismos(state) {
+    return state.all;
+  }
+
+  // actions
+};var actions = {
+  getOrganismosByNombreAndAutoridad: function getOrganismosByNombreAndAutoridad(_ref, organismo) {
+    var commit = _ref.commit;
+
+    __WEBPACK_IMPORTED_MODULE_0__api__["a" /* default */].getOrganismosByNombreAndAutoridad(organismo).then(function (organismos) {
+      return commit('setOrganismos', organismos);
+    });
+  }
+};
+
+// mutations
+var mutations = {
+  setOrganismos: function setOrganismos(state, organismos) {
+    state.all = organismos;
+  }
+};
+
+/* harmony default export */ __webpack_exports__["a"] = ({ state: state, getters: getters, actions: actions, mutations: mutations });
+
+/***/ }),
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(54)
+  __webpack_require__(58)
 }
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(57)
+var __vue_script__ = __webpack_require__(61)
 /* template */
-var __vue_template__ = __webpack_require__(63)
+var __vue_template__ = __webpack_require__(67)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -54339,13 +54642,13 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 54 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(55);
+var content = __webpack_require__(59);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -54365,21 +54668,21 @@ if(false) {
 }
 
 /***/ }),
-/* 55 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
 // module
-exports.push([module.i, "\n.micontainer{\n  background-color: #cecece;\n}\n", ""]);
+exports.push([module.i, "\n.micontainer{\n  /*background-color: #cecece;*/\n}\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 56 */
+/* 60 */
 /***/ (function(module, exports) {
 
 /**
@@ -54412,12 +54715,12 @@ module.exports = function listToStyles (parentId, list) {
 
 
 /***/ }),
-/* 57 */
+/* 61 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_Navbar__ = __webpack_require__(58);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_Navbar__ = __webpack_require__(62);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_Navbar___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__components_Navbar__);
 //
 //
@@ -54444,19 +54747,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 58 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(59)
+  __webpack_require__(63)
 }
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(61)
+var __vue_script__ = __webpack_require__(65)
 /* template */
-var __vue_template__ = __webpack_require__(62)
+var __vue_template__ = __webpack_require__(66)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -54495,13 +54798,13 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 59 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(60);
+var content = __webpack_require__(64);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -54521,10 +54824,10 @@ if(false) {
 }
 
 /***/ }),
-/* 60 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
@@ -54535,7 +54838,7 @@ exports.push([module.i, "\n.navbarstyle {\n\n  background-color: #cecece;\n\n  -
 
 
 /***/ }),
-/* 61 */
+/* 65 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -54599,7 +54902,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 62 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -54646,7 +54949,10 @@ var render = function() {
               [
                 _c(
                   "router-link",
-                  { staticClass: "linksfont", attrs: { to: { name: "main" } } },
+                  {
+                    staticClass: "linksfont",
+                    attrs: { to: { name: "gobierno" } }
+                  },
                   [_vm._v("Gobierno")]
                 )
               ],
@@ -54659,7 +54965,10 @@ var render = function() {
               [
                 _c(
                   "router-link",
-                  { staticClass: "linksfont", attrs: { to: { name: "main" } } },
+                  {
+                    staticClass: "linksfont",
+                    attrs: { to: { name: "provincia" } }
+                  },
                   [_vm._v("La provincia")]
                 )
               ],
@@ -54675,7 +54984,10 @@ var render = function() {
               [
                 _c(
                   "router-link",
-                  { staticClass: "linksfont", attrs: { to: { name: "main" } } },
+                  {
+                    staticClass: "linksfont",
+                    attrs: { to: { name: "transparencia" } }
+                  },
                   [_vm._v("Transparencia")]
                 )
               ],
@@ -54768,7 +55080,7 @@ if (false) {
 }
 
 /***/ }),
-/* 63 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -54799,28 +55111,121 @@ if (false) {
 }
 
 /***/ }),
-/* 64 */
+/* 68 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(69)
+}
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(71)
+/* template */
+var __vue_template__ = __webpack_require__(130)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/views/MainPage.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-1814d68a", Component.options)
+  } else {
+    hotAPI.reload("data-v-1814d68a", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 69 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(70);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(2)("2ce7de98", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-1814d68a\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./MainPage.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-1814d68a\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./MainPage.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 70 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.mainPage{\n\n  background-color: #cecece;\n}\n\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 71 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_Parallax__ = __webpack_require__(71);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_Parallax__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_Parallax___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__components_Parallax__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_BarraBotones__ = __webpack_require__(76);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_BarraBotones___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__components_BarraBotones__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_Noticias__ = __webpack_require__(81);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_Noticias___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__components_Noticias__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components_Flyers__ = __webpack_require__(86);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components_Flyers__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components_Flyers___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__components_Flyers__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__components_Footer__ = __webpack_require__(91);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__components_Footer__ = __webpack_require__(90);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__components_Footer___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__components_Footer__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__components_NumerosImportantes__ = __webpack_require__(111);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__components_NumerosImportantes___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__components_NumerosImportantes__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__components_Carrousel__ = __webpack_require__(116);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__components_Carrousel___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7__components_Carrousel__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__components_ImagenesOrganismos__ = __webpack_require__(121);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__components_ImagenesOrganismos___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8__components_ImagenesOrganismos__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__components_SubFooter__ = __webpack_require__(110);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__components_SubFooter___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6__components_SubFooter__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__components_NumerosImportantes__ = __webpack_require__(115);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__components_NumerosImportantes___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7__components_NumerosImportantes__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__components_Carrousel__ = __webpack_require__(120);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__components_Carrousel___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8__components_Carrousel__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__components_ImagenesOrganismos__ = __webpack_require__(125);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__components_ImagenesOrganismos___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9__components_ImagenesOrganismos__);
 //
 //
 //
@@ -54858,6 +55263,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+
 
 
 
@@ -54876,16 +55283,22 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   data: function data() {
     return {
       imagenesOrganismos: [{
+        id: 1,
         src_img: 'https://www.entrerios.gov.ar/portal/userfiles/images/otras_imagenes/btn_mingob.png'
       }, {
+        id: 2,
         src_img: 'https://www.entrerios.gov.ar/portal/userfiles/images/otras_imagenes/btn_minplan.png'
       }, {
+        id: 3,
         src_img: 'https://www.entrerios.gov.ar/portal/userfiles/images/otras_imagenes/btn_produccion.png'
       }, {
+        id: 4,
         src_img: 'https://www.entrerios.gov.ar/portal/userfiles/images/otras_imagenes/btn_minecon.png'
       }, {
+        id: 5,
         src_img: 'https://www.entrerios.gov.ar/portal/userfiles/images/otras_imagenes/btn_dsocial.png'
       }, {
+        id: 6,
         src_img: 'https://www.entrerios.gov.ar/portal/userfiles/images/otras_imagenes/btn_salud.png'
       }]
     };
@@ -54897,9 +55310,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     Noticias: __WEBPACK_IMPORTED_MODULE_3__components_Noticias___default.a,
     Flyers: __WEBPACK_IMPORTED_MODULE_4__components_Flyers___default.a,
     Footer: __WEBPACK_IMPORTED_MODULE_5__components_Footer___default.a,
-    NumerosImportantes: __WEBPACK_IMPORTED_MODULE_6__components_NumerosImportantes___default.a,
-    Carrousel: __WEBPACK_IMPORTED_MODULE_7__components_Carrousel___default.a,
-    ImagenesOrganismos: __WEBPACK_IMPORTED_MODULE_8__components_ImagenesOrganismos___default.a
+    SubFooter: __WEBPACK_IMPORTED_MODULE_6__components_SubFooter___default.a,
+    NumerosImportantes: __WEBPACK_IMPORTED_MODULE_7__components_NumerosImportantes___default.a,
+    Carrousel: __WEBPACK_IMPORTED_MODULE_8__components_Carrousel___default.a,
+    ImagenesOrganismos: __WEBPACK_IMPORTED_MODULE_9__components_ImagenesOrganismos___default.a
   },
 
   methods: {},
@@ -54913,63 +55327,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   },
   mounted: function mounted() {}
 });
-
-/***/ }),
-/* 65 */,
-/* 66 */,
-/* 67 */,
-/* 68 */,
-/* 69 */,
-/* 70 */,
-/* 71 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(72)
-}
-var normalizeComponent = __webpack_require__(0)
-/* script */
-var __vue_script__ = __webpack_require__(74)
-/* template */
-var __vue_template__ = __webpack_require__(75)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = injectStyle
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/Parallax.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-78f0034e", Component.options)
-  } else {
-    hotAPI.reload("data-v-78f0034e", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
 
 /***/ }),
 /* 72 */
@@ -55001,12 +55358,12 @@ if(false) {
 /* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
 // module
-exports.push([module.i, "\n.containerParallel{\n  height: 400px;\n}\n\n", ""]);
+exports.push([module.i, "\n.containerParallel {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -ms-flex-line-pack: center;\n      align-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  -ms-flex-wrap: nowrap;\n      flex-wrap: nowrap;\n  height: 320px;\n  -ms-flex-pack: distribute;\n      justify-content: space-around;\n  position: relative;\n  width: 100%;\n}\n.containerParallel section {\n  width: 100%;\n  height: 70vh;\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  text-align: center;\n  position: relative;\n  overflow: hidden;\n  background-color: #000;\n}\n.boton{\n -webkit-box-align: center;\n     -ms-flex-align: center;\n         align-items: center;\n padding: 0 10px;\n border: 1px solid rgba(238,238,238 ,1);\n border-radius: 5px;\n color: rgba(117,117,117 ,1);\n -webkit-box-shadow: 5px 10px 20px -20px rgba(85,172,238 ,1);\n         box-shadow: 5px 10px 20px -20px rgba(85,172,238 ,1);\n}\n\n", ""]);
 
 // exports
 
@@ -55046,7 +55403,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
           position: 'absolute',
           zIndex: '500',
           opacity: '0.8',
-          backgroundImage: 'url(\'' + this.urlImage + '\')'
+          backgroundImage: 'url(\'' + this.urlImage + '\')',
+          backgroundPosition: '41% 100px'
 
         }
 
@@ -55147,7 +55505,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(77)
 }
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(1)
 /* script */
 var __vue_script__ = __webpack_require__(79)
 /* template */
@@ -55219,7 +55577,7 @@ if(false) {
 /* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
@@ -55305,7 +55663,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(82)
 }
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(1)
 /* script */
 var __vue_script__ = __webpack_require__(84)
 /* template */
@@ -55377,7 +55735,7 @@ if(false) {
 /* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
@@ -55468,61 +55826,10 @@ if (false) {
 /* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(87)
-}
-var normalizeComponent = __webpack_require__(0)
-/* script */
-var __vue_script__ = __webpack_require__(89)
-/* template */
-var __vue_template__ = __webpack_require__(90)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = injectStyle
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/Flyers.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-4a9e178a", Component.options)
-  } else {
-    hotAPI.reload("data-v-4a9e178a", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 87 */
-/***/ (function(module, exports, __webpack_require__) {
-
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(88);
+var content = __webpack_require__(87);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -55542,10 +55849,10 @@ if(false) {
 }
 
 /***/ }),
-/* 88 */
+/* 87 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
@@ -55556,7 +55863,7 @@ exports.push([module.i, "\n.flyers{\n\n  margin:5%;\n  -webkit-box-shadow: -1px 
 
 
 /***/ }),
-/* 89 */
+/* 88 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -55571,15 +55878,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 
-  props: ['src_img']
+  props: ['src_img', 'url_sitio']
 
 });
 
 /***/ }),
-/* 90 */
+/* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -55588,10 +55903,17 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "flyers" }, [
     _c("div", { staticClass: "card bg-dark text-white" }, [
-      _c("img", {
-        staticClass: "card-img",
-        attrs: { src: _vm.src_img, alt: "Card image" }
-      })
+      _vm.url_sitio
+        ? _c("a", { attrs: { href: _vm.url_sitio } }, [
+            _c("img", {
+              staticClass: "card-img",
+              attrs: { src: _vm.src_img, alt: "Card image" }
+            })
+          ])
+        : _c("img", {
+            staticClass: "card-img",
+            attrs: { src: _vm.src_img, alt: "Card image" }
+          })
     ])
   ])
 }
@@ -55606,19 +55928,19 @@ if (false) {
 }
 
 /***/ }),
-/* 91 */
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(92)
+  __webpack_require__(91)
 }
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(94)
+var __vue_script__ = __webpack_require__(93)
 /* template */
-var __vue_template__ = __webpack_require__(110)
+var __vue_template__ = __webpack_require__(109)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -55657,13 +55979,13 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 92 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(93);
+var content = __webpack_require__(92);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -55683,10 +56005,10 @@ if(false) {
 }
 
 /***/ }),
-/* 93 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
@@ -55697,16 +56019,16 @@ exports.push([module.i, "\n.footer{\n  background-color: #2b2b2b;\n}\n.imagen_fo
 
 
 /***/ }),
-/* 94 */
+/* 93 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__RedesSociales__ = __webpack_require__(95);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__RedesSociales__ = __webpack_require__(94);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__RedesSociales___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__RedesSociales__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Ministerios__ = __webpack_require__(100);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Ministerios__ = __webpack_require__(99);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Ministerios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__Ministerios__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__AccesosDirectos__ = __webpack_require__(105);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__AccesosDirectos__ = __webpack_require__(104);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__AccesosDirectos___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__AccesosDirectos__);
 //
 //
@@ -55765,19 +56087,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 95 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(96)
+  __webpack_require__(95)
 }
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(98)
+var __vue_script__ = __webpack_require__(97)
 /* template */
-var __vue_template__ = __webpack_require__(99)
+var __vue_template__ = __webpack_require__(98)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -55816,13 +56138,13 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 96 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(97);
+var content = __webpack_require__(96);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -55842,10 +56164,10 @@ if(false) {
 }
 
 /***/ }),
-/* 97 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
@@ -55856,7 +56178,7 @@ exports.push([module.i, "\n.links_redes_sociales{\n  margin: 5%;\n}\n.fuente_red
 
 
 /***/ }),
-/* 98 */
+/* 97 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -55879,7 +56201,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony default export */ __webpack_exports__["default"] = ({});
 
 /***/ }),
-/* 99 */
+/* 98 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -55930,19 +56252,19 @@ if (false) {
 }
 
 /***/ }),
-/* 100 */
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(101)
+  __webpack_require__(100)
 }
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(103)
+var __vue_script__ = __webpack_require__(102)
 /* template */
-var __vue_template__ = __webpack_require__(104)
+var __vue_template__ = __webpack_require__(103)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -55981,13 +56303,13 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 101 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(102);
+var content = __webpack_require__(101);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -56007,10 +56329,10 @@ if(false) {
 }
 
 /***/ }),
-/* 102 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
@@ -56021,7 +56343,7 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 
 /***/ }),
-/* 103 */
+/* 102 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -56047,7 +56369,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony default export */ __webpack_exports__["default"] = ({});
 
 /***/ }),
-/* 104 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -56116,19 +56438,19 @@ if (false) {
 }
 
 /***/ }),
-/* 105 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(106)
+  __webpack_require__(105)
 }
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(108)
+var __vue_script__ = __webpack_require__(107)
 /* template */
-var __vue_template__ = __webpack_require__(109)
+var __vue_template__ = __webpack_require__(108)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -56167,13 +56489,13 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 106 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(107);
+var content = __webpack_require__(106);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -56193,10 +56515,10 @@ if(false) {
 }
 
 /***/ }),
-/* 107 */
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
@@ -56207,7 +56529,7 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
 
 
 /***/ }),
-/* 108 */
+/* 107 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -56237,7 +56559,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony default export */ __webpack_exports__["default"] = ({});
 
 /***/ }),
-/* 109 */
+/* 108 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -56300,7 +56622,7 @@ if (false) {
 }
 
 /***/ }),
-/* 110 */
+/* 109 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -56348,19 +56670,161 @@ if (false) {
 }
 
 /***/ }),
-/* 111 */
+/* 110 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(112)
+  __webpack_require__(111)
 }
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(114)
+var __vue_script__ = __webpack_require__(113)
 /* template */
-var __vue_template__ = __webpack_require__(115)
+var __vue_template__ = __webpack_require__(114)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/SubFooter.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-85ae0b58", Component.options)
+  } else {
+    hotAPI.reload("data-v-85ae0b58", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 111 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(112);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(2)("0bd132ad", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-85ae0b58\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./SubFooter.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-85ae0b58\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./SubFooter.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 112 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.subFooter{\n  background-color: #799f4f;\n  color: white;\n  text-align: center;\n  font-weight: 900;\n}\n\n\n\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 113 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({});
+
+/***/ }),
+/* 114 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _vm._m(0)
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "subFooter" }, [
+      _vm._v(
+        "\n      Desarrollado por la Dirección General de Informática -  "
+      ),
+      _c("a", { attrs: { href: "https://www.entrerios.gov.ar/dgin" } }, [
+        _vm._v("entrerios.gov.ar/dgin")
+      ]),
+      _vm._v(" - Copyright 2018\n")
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-85ae0b58", module.exports)
+  }
+}
+
+/***/ }),
+/* 115 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(116)
+}
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(118)
+/* template */
+var __vue_template__ = __webpack_require__(119)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -56399,13 +56863,13 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 112 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(113);
+var content = __webpack_require__(117);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -56425,10 +56889,10 @@ if(false) {
 }
 
 /***/ }),
-/* 113 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
@@ -56439,7 +56903,7 @@ exports.push([module.i, "\n.contenedores{\n  display: -webkit-box;\n  display: -
 
 
 /***/ }),
-/* 114 */
+/* 118 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -56488,7 +56952,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony default export */ __webpack_exports__["default"] = ({});
 
 /***/ }),
-/* 115 */
+/* 119 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -56545,19 +57009,19 @@ if (false) {
 }
 
 /***/ }),
-/* 116 */
+/* 120 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(117)
+  __webpack_require__(121)
 }
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(119)
+var __vue_script__ = __webpack_require__(123)
 /* template */
-var __vue_template__ = __webpack_require__(120)
+var __vue_template__ = __webpack_require__(124)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -56596,13 +57060,13 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 117 */
+/* 121 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(118);
+var content = __webpack_require__(122);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -56622,10 +57086,10 @@ if(false) {
 }
 
 /***/ }),
-/* 118 */
+/* 122 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
@@ -56636,7 +57100,7 @@ exports.push([module.i, "\n#carouselExampleSlidesOnly {\n\n  margin: 3%;\n\n  -w
 
 
 /***/ }),
-/* 119 */
+/* 123 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -56668,7 +57132,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 120 */
+/* 124 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -56734,19 +57198,19 @@ if (false) {
 }
 
 /***/ }),
-/* 121 */
+/* 125 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(122)
+  __webpack_require__(126)
 }
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(124)
+var __vue_script__ = __webpack_require__(128)
 /* template */
-var __vue_template__ = __webpack_require__(125)
+var __vue_template__ = __webpack_require__(129)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -56785,13 +57249,13 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 122 */
+/* 126 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(123);
+var content = __webpack_require__(127);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -56811,10 +57275,10 @@ if(false) {
 }
 
 /***/ }),
-/* 123 */
+/* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
@@ -56825,7 +57289,7 @@ exports.push([module.i, "\n.imagenes_organismos {\n\n  margin: 9%;\n  width: 80%
 
 
 /***/ }),
-/* 124 */
+/* 128 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -56844,7 +57308,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 125 */
+/* 129 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -56869,7 +57333,7 @@ if (false) {
 }
 
 /***/ }),
-/* 126 */
+/* 130 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -56878,6 +57342,7 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
+    { staticClass: "mainPage" },
     [
       _c("Parallax", {
         attrs: {
@@ -56944,6 +57409,7 @@ var render = function() {
         { staticClass: "row" },
         _vm._l(_vm.imagenesOrganismos, function(imagenOrganismo) {
           return _c("ImagenesOrganismos", {
+            key: imagenOrganismo.id,
             attrs: { imagenOrganismo: imagenOrganismo }
           })
         })
@@ -56951,7 +57417,9 @@ var render = function() {
       _vm._v(" "),
       _c("NumerosImportantes"),
       _vm._v(" "),
-      _c("Footer")
+      _c("Footer"),
+      _vm._v(" "),
+      _c("SubFooter")
     ],
     1
   )
@@ -56967,101 +57435,19 @@ if (false) {
 }
 
 /***/ }),
-/* 127 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 128 */,
-/* 129 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__api__ = __webpack_require__(52);
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-
-
-// initial state
-var state = {
-  all: []
-
-  // getters
-};var getters = {
-  allNoticias: function allNoticias(state) {
-    return state.all;
-  }
-
-  // actions
-};var actions = {
-  getAllNoticias: function getAllNoticias(_ref) {
-    var commit = _ref.commit;
-
-    __WEBPACK_IMPORTED_MODULE_0__api__["a" /* default */].getNoticias().then(function (noticias) {
-      return commit('setNoticias', noticias);
-    });
-  },
-  addNoticia: function addNoticia(_ref2, noticia) {
-    var commit = _ref2.commit;
-
-    __WEBPACK_IMPORTED_MODULE_0__api__["a" /* default */].addNoticia(noticia).then(function (_noticia) {
-      return commit('noticiaAdded', _noticia);
-    });
-  },
-  deleteNoticia: function deleteNoticia(_ref3, id) {
-    var commit = _ref3.commit;
-
-    __WEBPACK_IMPORTED_MODULE_0__api__["a" /* default */].deleteNoticia(id).then(function (post) {
-      return commit('noticiaDeleted', post.id);
-    });
-  },
-  updateNoticia: function updateNoticia(_ref4, noticia) {
-    var commit = _ref4.commit;
-
-    __WEBPACK_IMPORTED_MODULE_0__api__["a" /* default */].updateNoticia(noticia).then(function (noticia) {
-      return commit('noticiaEdited', noticia);
-    });
-  }
-};
-
-// mutations
-var mutations = {
-  setNoticias: function setNoticias(state, noticias) {
-    state.all = noticias;
-  },
-  noticiaAdded: function noticiaAdded(state, noticia) {
-    state.all = [].concat(_toConsumableArray(state.all), [noticia]);
-  },
-  noticiaDeleted: function noticiaDeleted(state, id) {
-    state.all = state.all.filter(function (noticia) {
-      return noticia.id !== id;
-    });
-  },
-  noticiaEdited: function noticiaEdited(state, noticia) {
-
-    state.all = state.all.map(function (item) {
-      if (item.id === noticia.id) return noticia;else return item;
-    });
-  }
-};
-
-/* harmony default export */ __webpack_exports__["a"] = ({ state: state, getters: getters, actions: actions, mutations: mutations });
-
-/***/ }),
-/* 130 */
+/* 131 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(131)
+  __webpack_require__(132)
 }
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(133)
+var __vue_script__ = __webpack_require__(134)
 /* template */
-var __vue_template__ = __webpack_require__(134)
+var __vue_template__ = __webpack_require__(135)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -57100,13 +57486,13 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 131 */
+/* 132 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(132);
+var content = __webpack_require__(133);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -57126,10 +57512,10 @@ if(false) {
 }
 
 /***/ }),
-/* 132 */
+/* 133 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
@@ -57140,7 +57526,7 @@ exports.push([module.i, "\n.icono{\n  margin:10%;\n}\n.font_noticia{\n  font-siz
 
 
 /***/ }),
-/* 133 */
+/* 134 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -57171,7 +57557,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 134 */
+/* 135 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -57204,19 +57590,151 @@ if (false) {
 }
 
 /***/ }),
-/* 135 */
+/* 136 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(136)
+  __webpack_require__(137)
 }
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(138)
+var __vue_script__ = __webpack_require__(139)
 /* template */
-var __vue_template__ = __webpack_require__(139)
+var __vue_template__ = __webpack_require__(148)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/views/NoticiasABM.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-12b694fb", Component.options)
+  } else {
+    hotAPI.reload("data-v-12b694fb", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 137 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(138);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(2)("499d9faf", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-12b694fb\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./NoticiasABM.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-12b694fb\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./NoticiasABM.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 138 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.noticiasabm{\n\n  margin-top:10%;\n  background-color:white;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 139 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_admin_FormularioNuevaNoticia__ = __webpack_require__(140);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_admin_FormularioNuevaNoticia___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__components_admin_FormularioNuevaNoticia__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_admin_NoticiasLista__ = __webpack_require__(145);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_admin_NoticiasLista___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__components_admin_NoticiasLista__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+
+  components: {
+    FormularioNuevaNoticia: __WEBPACK_IMPORTED_MODULE_0__components_admin_FormularioNuevaNoticia___default.a,
+    NoticiasLista: __WEBPACK_IMPORTED_MODULE_1__components_admin_NoticiasLista___default.a
+  }
+
+});
+
+/***/ }),
+/* 140 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(141)
+}
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(143)
+/* template */
+var __vue_template__ = __webpack_require__(144)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -57255,13 +57773,13 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 136 */
+/* 141 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(137);
+var content = __webpack_require__(142);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
@@ -57281,10 +57799,10 @@ if(false) {
 }
 
 /***/ }),
-/* 137 */
+/* 142 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(1)(false);
+exports = module.exports = __webpack_require__(0)(false);
 // imports
 
 
@@ -57295,12 +57813,12 @@ exports.push([module.i, "\n.formulario {\n  margin-top: 20%;\n}\n", ""]);
 
 
 /***/ }),
-/* 138 */
+/* 143 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(5);
 //
 //
 //
@@ -57356,7 +57874,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 139 */
+/* 144 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -57464,167 +57982,11 @@ if (false) {
 }
 
 /***/ }),
-/* 140 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(141)
-}
-var normalizeComponent = __webpack_require__(0)
-/* script */
-var __vue_script__ = __webpack_require__(143)
-/* template */
-var __vue_template__ = __webpack_require__(144)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = injectStyle
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/views/NoticiasABM.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-12b694fb", Component.options)
-  } else {
-    hotAPI.reload("data-v-12b694fb", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 141 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(142);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(2)("499d9faf", content, false, {});
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-12b694fb\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./NoticiasABM.vue", function() {
-     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-12b694fb\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./NoticiasABM.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 142 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(1)(false);
-// imports
-
-
-// module
-exports.push([module.i, "\n.noticiasabm{\n\n  margin-top:10%;\n  background-color:white;\n}\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 143 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_admin_FormularioNuevaNoticia__ = __webpack_require__(135);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_admin_FormularioNuevaNoticia___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__components_admin_FormularioNuevaNoticia__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_admin_NoticiasLista__ = __webpack_require__(145);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_admin_NoticiasLista___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__components_admin_NoticiasLista__);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-
-  components: {
-    FormularioNuevaNoticia: __WEBPACK_IMPORTED_MODULE_0__components_admin_FormularioNuevaNoticia___default.a,
-    NoticiasLista: __WEBPACK_IMPORTED_MODULE_1__components_admin_NoticiasLista___default.a
-  }
-
-});
-
-/***/ }),
-/* 144 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "row noticiasabm" }, [
-    _c("div", { staticClass: "col-sm-6" }, [_c("FormularioNuevaNoticia")], 1),
-    _vm._v(" "),
-    _c("div", { staticClass: "col-sm-6" }, [_c("NoticiasLista")], 1)
-  ])
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-12b694fb", module.exports)
-  }
-}
-
-/***/ }),
 /* 145 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(0)
+var normalizeComponent = __webpack_require__(1)
 /* script */
 var __vue_script__ = __webpack_require__(146)
 /* template */
@@ -57672,7 +58034,7 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(5);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 //
@@ -57835,6 +58197,3222 @@ if (false) {
     require("vue-hot-reload-api")      .rerender("data-v-204e996e", module.exports)
   }
 }
+
+/***/ }),
+/* 148 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "row noticiasabm" }, [
+    _c("div", { staticClass: "col-sm-6" }, [_c("FormularioNuevaNoticia")], 1),
+    _vm._v(" "),
+    _c("div", { staticClass: "col-sm-6" }, [_c("NoticiasLista")], 1)
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-12b694fb", module.exports)
+  }
+}
+
+/***/ }),
+/* 149 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(150)
+}
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(152)
+/* template */
+var __vue_template__ = __webpack_require__(187)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/views/GobiernoPage.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-46f4885f", Component.options)
+  } else {
+    hotAPI.reload("data-v-46f4885f", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 150 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(151);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(2)("70806e3c", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-46f4885f\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./GobiernoPage.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-46f4885f\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./GobiernoPage.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 151 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.gobiernoPageContainer{\n  background-color: white;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 152 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_Parallax__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_Parallax___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__components_Parallax__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_NavbarLateralGobierno__ = __webpack_require__(153);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_NavbarLateralGobierno___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__components_NavbarLateralGobierno__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_BotonSubir__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_BotonSubir___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__components_BotonSubir__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  components: {
+    Parallax: __WEBPACK_IMPORTED_MODULE_0__components_Parallax___default.a,
+    NavbarLateralGobierno: __WEBPACK_IMPORTED_MODULE_1__components_NavbarLateralGobierno___default.a,
+    BotonSubir: __WEBPACK_IMPORTED_MODULE_2__components_BotonSubir___default.a
+  }
+
+});
+
+/***/ }),
+/* 153 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(154)
+}
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(156)
+/* template */
+var __vue_template__ = __webpack_require__(182)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/NavbarLateralGobierno.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-69f189dd", Component.options)
+  } else {
+    hotAPI.reload("data-v-69f189dd", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 154 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(155);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(2)("71728ba6", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-69f189dd\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./NavbarLateralGobierno.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-69f189dd\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./NavbarLateralGobierno.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 155 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.containerNavbarLateral {\n  background-color: white;\n  color: black;\n  margin: 2%;\n\n  font-size: 1.0em;\n  font-weight: 500;\n}\na {\n  color: #0fb3f0;\n}\n.titulo {\n  font-size: 1.4em;\n  font-weight: 600;\n\n  color: #0fb3f0;\n}\n.nav-pills .nav-link.active,\n.nav-pills .show>.nav-link {\n  background-color: #0fb3f0;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 156 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ConsultaOrganismos__ = __webpack_require__(157);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ConsultaOrganismos___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__ConsultaOrganismos__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__EmpresasEstado__ = __webpack_require__(172);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__EmpresasEstado___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__EmpresasEstado__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__PoderJudicial__ = __webpack_require__(177);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__PoderJudicial___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__PoderJudicial__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+
+  components: {
+    ConsultaOrganismos: __WEBPACK_IMPORTED_MODULE_0__ConsultaOrganismos___default.a,
+    EmpresasEstado: __WEBPACK_IMPORTED_MODULE_1__EmpresasEstado___default.a,
+    PoderJudicial: __WEBPACK_IMPORTED_MODULE_2__PoderJudicial___default.a
+  }
+
+});
+
+/***/ }),
+/* 157 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(158)
+}
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(160)
+/* template */
+var __vue_template__ = __webpack_require__(171)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/ConsultaOrganismos.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-804059fc", Component.options)
+  } else {
+    hotAPI.reload("data-v-804059fc", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 158 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(159);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(2)("6db5ba38", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-804059fc\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./ConsultaOrganismos.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-804059fc\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./ConsultaOrganismos.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 159 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.consultaOrganismosStyle{\n  margin-top: 10px;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 160 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__FormularioBusquedaOrganismo__ = __webpack_require__(161);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__FormularioBusquedaOrganismo___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__FormularioBusquedaOrganismo__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__OrganismoCard__ = __webpack_require__(166);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__OrganismoCard___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__OrganismoCard__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+
+  components: {
+    FormularioBusquedaOrganismo: __WEBPACK_IMPORTED_MODULE_1__FormularioBusquedaOrganismo___default.a,
+    OrganismoCard: __WEBPACK_IMPORTED_MODULE_2__OrganismoCard___default.a
+  },
+
+  computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["c" /* mapGetters */])({
+    organismos: 'allOrganismos'
+  }),
+
+  methods: {},
+
+  mounted: function mounted() {}
+});
+
+/***/ }),
+/* 161 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(162)
+}
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(164)
+/* template */
+var __vue_template__ = __webpack_require__(165)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/FormularioBusquedaOrganismo.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-01e52e46", Component.options)
+  } else {
+    hotAPI.reload("data-v-01e52e46", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 162 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(163);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(2)("1b995cc6", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-01e52e46\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./FormularioBusquedaOrganismo.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-01e52e46\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./FormularioBusquedaOrganismo.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 163 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.btn-primary {\n    color: #fff;\n    background-color: #0fb3f0;\n    border-color: #0fb3f0;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 164 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+
+  data: function data() {
+
+    return {
+
+      nombreOrganismo: '',
+      nombreAutoridad: ''
+
+    };
+  },
+
+  methods: {
+
+    searchOrganismo: function searchOrganismo(event) {
+
+      if (event) event.preventDefault();
+
+      this.$store.dispatch('getOrganismosByNombreAndAutoridad', {
+        nombre: this.nombreOrganismo,
+        director: this.nombreAutoridad
+      });
+    }
+
+  }
+});
+
+/***/ }),
+/* 165 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "col-sm-9" }, [
+    _c("div", { staticClass: "card" }, [
+      _c("div", { staticClass: "card-header" }, [
+        _vm._v("\n      Buscar organismo\n    ")
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "card-body" }, [
+        _c("form", [
+          _c("div", { staticClass: "form-group" }, [
+            _c("label", [_vm._v("Ingrese el nombre del organismo:")]),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.nombreOrganismo,
+                  expression: "nombreOrganismo"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: { type: "text", id: "nombreOrganismo" },
+              domProps: { value: _vm.nombreOrganismo },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.nombreOrganismo = $event.target.value
+                }
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "form-group" }, [
+            _c("label", [_vm._v("Nombre y apellido de la autoridad:")]),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.nombreAutoridad,
+                  expression: "nombreAutoridad"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: { type: "text", id: "nombreAutoridad" },
+              domProps: { value: _vm.nombreAutoridad },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.nombreAutoridad = $event.target.value
+                }
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-primary",
+              on: { click: _vm.searchOrganismo }
+            },
+            [_vm._v("Buscar")]
+          )
+        ])
+      ])
+    ])
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-01e52e46", module.exports)
+  }
+}
+
+/***/ }),
+/* 166 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(167)
+}
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(169)
+/* template */
+var __vue_template__ = __webpack_require__(170)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/OrganismoCard.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-8b0f0934", Component.options)
+  } else {
+    hotAPI.reload("data-v-8b0f0934", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 167 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(168);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(2)("5dbb8ac1", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-8b0f0934\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./OrganismoCard.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-8b0f0934\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./OrganismoCard.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 168 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.sombra{\n\n  -webkit-box-shadow: -1px 6px 18px -7px rgba(0, 0, 0, 0.75);\n  box-shadow: -1px 6px 18px -7px rgba(0, 0, 0, 0.75);\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 169 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: ['organismo']
+});
+
+/***/ }),
+/* 170 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "col-sm-4" }, [
+    _c("div", { staticClass: "card animated flipInX sombra" }, [
+      _c("div", { staticClass: "card-body" }, [
+        _c("h5", { staticClass: "card-title" }, [
+          _vm._v(_vm._s(_vm.organismo.nombre))
+        ]),
+        _vm._v(" "),
+        _c("h6", { staticClass: "card-subtitle mb-2 text-muted" }, [
+          _vm._v(_vm._s(_vm.organismo.organismo_padre))
+        ]),
+        _vm._v(" "),
+        _c("p", { staticClass: "card-text" }, [
+          _vm._v("Autoridad: " + _vm._s(_vm.organismo.director))
+        ]),
+        _vm._v(" "),
+        _c(
+          "a",
+          { staticClass: "card-link", attrs: { href: _vm.organismo.url } },
+          [_vm._v("Ir al sitio")]
+        )
+      ])
+    ])
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-8b0f0934", module.exports)
+  }
+}
+
+/***/ }),
+/* 171 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { staticClass: "consultaOrganismosStyle" },
+    [
+      _c("FormularioBusquedaOrganismo"),
+      _vm._v(" "),
+      _c("br"),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "row" },
+        _vm._l(_vm.organismos, function(organismo) {
+          return _c("OrganismoCard", {
+            key: organismo.id,
+            attrs: { organismo: organismo }
+          })
+        })
+      )
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-804059fc", module.exports)
+  }
+}
+
+/***/ }),
+/* 172 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(173)
+}
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(175)
+/* template */
+var __vue_template__ = __webpack_require__(176)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/EmpresasEstado.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-7b1e4507", Component.options)
+  } else {
+    hotAPI.reload("data-v-7b1e4507", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 173 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(174);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(2)("4e5ab954", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-7b1e4507\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./EmpresasEstado.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-7b1e4507\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./EmpresasEstado.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 174 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.empresasEstado{\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 175 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Flyers__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Flyers___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__Flyers__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  components: {
+    Flyers: __WEBPACK_IMPORTED_MODULE_0__Flyers___default.a
+  }
+});
+
+/***/ }),
+/* 176 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "row" }, [
+    _c(
+      "div",
+      { staticClass: "col-sm-3" },
+      [
+        _c("Flyers", {
+          attrs: {
+            src_img:
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLO7sQ1CLF_YcAPg_NgfxY4x2UI1SNDrNOc4BU-d1kpbqn1DaF1w",
+            url_sitio: "https://www.enersa.com.ar/"
+          }
+        })
+      ],
+      1
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticClass: "col-sm-3" },
+      [
+        _c("Flyers", {
+          attrs: {
+            src_img:
+              "https://www.entrerios.gov.ar/portal/userfiles/images/otras_imagenes/logo_sidecreer.jpg",
+            url_sitio: "https://www.sidecreer.com.ar/"
+          }
+        })
+      ],
+      1
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticClass: "col-sm-3" },
+      [
+        _c("Flyers", {
+          attrs: {
+            src_img:
+              "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASkAAABqCAMAAADX/FfGAAAApVBMVEX///8hMZQZQnspKYzmAAD39/d7e4S1tb1CSpRaWqUhMYx7e7WcnM6trdb/9/fv7+8xMZy9vd5jY5zm5vfW1u/Ozubm5u/39//v7/djY2OcnJzva0qlpa3Ozs7m5ubW1tb3vaX3rYz3zr3/nGP/5t7/MTH/YzHOMQD/9+/OMTH31sX/7+bOAADOYzH/MQAAMWP/zs4xY2NjY87/AAD//87OnGMxMWM8jBEjAAAStklEQVR4nO1dCUOjuhamYjQLUHbQ1lrXcZ17333L//9p7ywJUKBatTjeO546tgMhhI8vJ+d8CdXzvu13NrE6X63Er27F17fV8ugEXkfL1a9uyde2+RIwAkqd4fs3r7Zb1uIzX56cfkO1zeZHR+f4fhfh7/Oj0+8eOG7z0yOAZr24uf/5fPXgeWdHR9mvbtOXNADq3Lu8PbS2iLzV0dE3q4YmTk/OvMsfh40tHr+hGjNxegRAHXbt5vobqqFVS2DUw08H0v0Ce+H9NTr5b6g2DICqHm6eCKYfi/Ud0+vmoRkPv41teZJ41/dMp6tH2rQg0ACq05NvqBo7Pjn2rm8IqKs7u4191s0ljolnv7R1X8gIqGca766bjWLBXfHSq3FU/DaPgZpTHHUlOgmMHQh/rnFcPP51zfs6dny09O4IqPVmorewA+EaR8ZvqLyzk2V1t3gaAtVGVxfg8r9ZBUCJuwVTp2+LLlQny89v3Feys6NTES3YRw12tiH7FXfS39jOj05rps7z2O5FC1UFjv9XaHt1WVaff9aBQVo3t3Bcj+1/cEA9IVRnJ6ef3ehQSR1L88vFHwLqynWvERMtqZ6uvAq76qc20Gh/NtPal/mnnnZgBNQFx5dDSj2uF7cdDQaiUnT/nwpVovWMzE8/8axDI0XlokFh0x6v7g/7thDg1wDcPZs43mapz0DNdLy1zKTG15p1gBpECOsOTve39zdMrsVdA9X5oNZ3izOQAWwx5ZCazbYVmdbomuZdoPr+/OLw345H6//ciUhcrxcI1u2d0/aWg1rfnxpm87mAH/iH7/gLPuOntEWqoEJUxO5u39zhm1vdNv4RTd1tkfnGW1OiORp+sHWnXaBuN5veDHmLyzYRvEbX/+wUY5HN5xunyyZwYCEgRWD58pdFCgJFp3XTwXrBlB3xfm6mN9UldMmbzxTXhe1+vh9+zglHmoDTMC1QfYfOSF0NohjMeu4/U1zPlI8W/zKgKpqGud+K1MNto3xuWIR5z831ZyrGRWBM+KbAc59eQODswuPN4VakvNV1NH5GZNVXVowro6RK9lbdkiTMiw5S99Guxz7efqJinEhlX2bHI4zv7zGix2mYHCqzfgqVqZ93rx/GJlBf+HHJ86hTWwI+CgY/+K1eLhgGYOjMFAb16P8L3BKMQCZox060Qy24lIh7Z8L4cufWiwuOVMUnyKChi6ZeQ0qi35fgL2iw9AGHgIaCkZEgpx27ZEcIVCZ9DVBFfzqonsYT5DGLHu8dVJPLoIm/I1LK1zNCKtRIwJqQmulRpGJIJl+rD42AQuR9WXjen3Yu9PB+ZKTbZuzgLj6BVaHelVPaRad5YEIciwLfdsO+lTMs+7rfQ+Gy5njOjxNPPLgR8GLn5kePP90Ry4ndesOpmQL/YuCViECplAEoA/D1CoApDCI1i03CDivIoBQeqtPAK0wAx2UeHR56oSFPJtmFhThUmjGnhaI59mXqq5qgslHVzc4+vQnhaXZr78pC17p+qoyxzYZD0QB2JjGOc+iMAp+5B0wxtDvPfBvcx3ZLwa5MeWkn6s+xMqhCp4OADadhoCyMo6kxKvZ16EXXt2/1VG7QvIm882ldVddPlRJdhsUkLtHfAGngpseih5TWeWaFLS1FQKAhUlSNkyf8MKIabfU9qEiyhLpkQPnmyiBUdvL4LcOfTaCfoP+dTqrsbXDKomGvE64DNkjgmImMY5CJmDINUn4ckcNCpHQPKUsv32LctfMTBgqHBtuSWAfgd5hVI7LnFrv70UT2x5NmgF0/lcV08eSRZtD9DO6DUSkpvEBaWOzWWV6rmLmn7BaLVOqxSwOyJTmhqaUjaWs0DYNAtQJGlGg4ZzVnx3M7ClV0efHQ32aHgRtEf0qkNjhFl4S9iZBirmhw4zCEC+pach4JwkUXHnc6IM4GpzQMoQV59LQdHbmizii5wuWtG4xCGALyjo8E1dPNCFQXgMrPXseMbH/9gRLop3DK9T54DxkpVGQQDE0ehEJzjKcMKVpFJ0pwW6yfAv+GO/6KmGzxyissSZ3RMBX6VEvH4G5gH43supaHXv73cEvJTj+BdpwSn8ipLOZ3yyloc5hKu49hQKRSy6AWKfboiYgtlUqtO5yaWU75SXPl55CmZQhLzwNDOXJnduTfmEh+vDrkwPRqU3GMbGTxjH5qyjAh8a0HBz+1ivkKHacKlXCPRITITztOIVKRQ8r2Uqmc4y5d7ytoh6YB0O/4qeWRIPR6UZZAghNUPO13+PPCdcGHdnam56hs6Imx59HphEAN/ZRuex+MffbykVMzjtEr9lN5i5SXswfXdsCznPrLszniYOwTGPgANeN+jMW9NK28+qoRqxYXFxeLZl36YOJGuIVVjxB3TCpTbfdTITrx9vLpouNqzE9ZmlFJWTs/hRlyJ56SbVdaIVKQR8p++JNQA/C+VFeHXXtyH+77i4W8qydLqdXEc8pJl1MxB9ksEgQQePqcaQTCqxotIbURuSuGUyMc1mMBzGBy3WgJFKPP/M1RbgU3X0jolX1OoZ/ypY4VnO/icGg/roZpzrONpsTpxHp62M37MKULwTdZ4UlAzoZJW4H3qtGnEs77IMqmD9Q8kUB2JyFbJDzmYatPiSQd5H0r1N2Qo5tDnxdhEmgqjB4ylJ6eNmC6WaxHxNDLfzNQ9WQSsQAQUmU29akoigplVJom8GnYLLupcrui0VK0x9vcvtkt5tj7jD+QG+Cu+SmNGZT7dKdrLtbX411r0TBqKiclbDqLmidyHpAS3FqXHlursryst9XyTjs9rYjMeoNUpdQ2ZjeQNpddqBbbPNAl78WnR6ZyUsKGiYmUMoaXjFmjDEmec0jVIXQqHUP3Cfc5b3qMISJ2ta6nqlWb3ATs8VrFeEvGHOGguLibVMarFKeznrDGbYyaqBMtlL4d/DDn3yOzcJhKSBpsZHj0/Y3bx0yJZFAH1WD5CxuunX1+tPM7UxlySg91zrBFCl3rTDd+zI+LQen32jmKeLggCVJuQicLYn9DmAk0QXV58xKpcHy8fSSReRqb5yWM+rqjCJdFbm9n2Eq+bZTEpve4Fo30zgRyAhbyUoldsSs2oBuIYcR8cKLKyNCBfux2NR1QwsSz2JRq5pCqjSIdqrANtJwKe0DtdykaLdNMYg416ZybQNHMhgSoru08xHpQBQJ1fz0dUBFOsgBGFD0jUjn1Q9Q6EZ/GT9WyjxSrJoWB4CJwVwVxFCCchGAFxE78XuJbmNn3ug54yjkPTJoGtgvzMs0ibiY8hnOtCYkYwirGfU8VYde7uZ5wvXVgxUsXQ5UWKAtQuPHBFqWPNE6VSvuxb1H1WEHXrLynXsYxPupMEKUnOILp2A8UTwoaG/HbtbcVsGrunce2OXLECSYxQ/U8Qipa3//jQZxNtoY/Yqr4DVLojbTMMQL141WLVLMEzY8lAgnBs4PVR/eCUaNFU8fs8zLJs1cBjJgaYqUQ2Ys7/TDCuYVOaohGaw8Lbs/4aAE78ZY83mIH3FiAtkZP//Oapy2mMRJs/dikNoMhTUqrMIgZoQapRg03cwyrkCM8PaqlkYhcU4Yh8I3AurTTt3Ti6GtlT90w2Tk8gipnqMbn5hmqigj0tG42P/CDkX/ywDCRkXKLN8pFnpZifCGm8VN17K6S+1mAsU7SUeZ86dQW6dQ+5lQaOaRCN50FnKJexv1YNwSiVWIZ8VSPr98CHLEBBJUj1eXCBQ6TLklP3KoCZZGyEQAaZl10dYBk1jj0OCDHgk3iuEHGhKLOuS7DCOnUaqYWbeh9gRXyjEoKLloHM3/W0YkJKppG1joYbW/ZUYzX8H594bSqS5y2mFBnYbFMZYnVonLuOXVZlllWZk2UUMt20JPKjljGEZAsSbo+zf8LEJt11GXLKa0wXXaTEqUFc3eoUNGxivHz+uq5SQXXYjXtt3LMmSt2sk5ZbqVeoSAAhMG/iTw7y6/Rh9NAz3KngYLwz5SMlCpCq9w5Hd7N3nTife6IAVO4m4BnuPZQWKhGhYlSseC+qe2hcnc07SMOqUXKcspeg4ytUNfEU8Z3HpiJhbc8oICi8PKkKOvKzaTa1DDlrBtCWJ7vy71ODlnSMyexYpfWdd8CoaqIlVsWfWDqbKpKXPWBmnQZAgmS5FXdlJPnpoc1JXZNjJ53YGI8Qo5GtQroLW0iCXbsqr0LM1aDO5wSpqOob2abvPYwZbqONjnC5FnYZWUtUJMvGQ4pcgwNXhG1OZQUE2qFgXeI2jm5jH7aB4Mdqlk2FvPjnEcm3BHbVUCJbkubJt6nPtVR1HUvdprT2kOK67YtJUoJqshBdSU+BtSuq1TLwAS5l+VgnJSIBPyOXYZYF7ideO3I1lx8yDCTS5ecoCgkU+4UHJbW8ckuipk2VEFClXTyQTv5aXXu7luSSyuDMlT/tV+59G4bNmGLCdF3neNxbij9Llh0w8sAlT/FkQOEDlmR2TlBokNicLfk5VcJ+n3jGBQFCva5IzcbZKGCk8XpqJuuOorxFfq2D3W9/x3sb+0zG04k6Db/o74qvDprND2VFnWVp36DlIdPoLZYRN6G0i7K+fjKcn6wn3urGh/RcAFR6Yn14aLKPiqay4ODfeoPdnIlTzeR6loOKSxkhezRP6ZeLVESCCjVUuPiasB6w4MQH56GOQAbj97eY1msTcUf/G1IBS3fdljW+bIt8esDA00j8mhAmUuWQcXH1+nLvUIV+pCHBHkF99LFCQNva5p4XX78vMcny8gLiVV9UQ+N1xgbfnrkg4ZAHfxhdn6W4mVLaQwD79wq6UM0UJxTyphwD7MRFQkDIbFqKOsxUKreB1DMqYODdC+haxl3A/DZILSewugRbFKMB1AJZbslPj3y4RMdWJP7CF6DXtw55qb2bo1irHsaKAMFnXI/orlsoBpqPeJVm2/8704NkJqFLx/yYs2vF8VWsmJc8KK2LoMpLZSZBWqHc77sgv7lkPrjoL/kKnrzg9SdXmcHt3Qfz2dvN/YZrQxKc1hstGSrw6iz12t72Zc1nAJTmz1w+7cAjNvyWPm6BxRsnNJsvElQcZKo3XJHY528m4ZZvdqSV777+qBrstefMVaORMRRMxuuXRl/4X3EVKaZYvJnNlzqsXoLySNvW7UbR44eTblv2VWMMctBoIaiua2YfoltZxoxuQHVQX+56ZstwZkFTnnNJ36VCYvrrQxKjIqLfYrmBz3bOWPeZlVdhPTM0b5XBb1sG1Dx9AX4rPM9fouL7EPVoVXZkiIP7NZmpxNf4FM3j8jatL8suqRK7NgqSKkRIf/GSkp8nK3cgiwXhPe8aOYw2CLc0j59SorxnGbMNI16OuGHIvZlA6A63kopT9TCyzyThioBtlUiU4FH34CRQPoOVinjJYkdgj1RwWidwwECG5jOYsgj8HjcZVLaWmcQjgivpNi98EPYG/glxEOQ2mTCo1psZQQKFswiLAoFYLMKcB82oYRUIFRYgScQRJZB3aSzrwrk2R6JPeQURuwri1QgpQniQMaBMr5R8PLTIFY5XLiMixT+r6mMwR8JhVSgEgWoYnSGizhNbAKpcIehElCZCuFDGFMBDZ9NqHF2RyVQsFBcGD6GEuLIyEgdGKkE3pkwhQp8yVWW3mqmqLI4LbCAJ+Y0zucBLR5NxL5F83+NIQU5syCkDD7SqA1AFod+IFMZxLje1XjzWOJmGUh8ZjFVMonTGK46hgJ+kMJhENBovLgkVgg1LuGQ+Dh8AoVSKBZEpQ8X7eMJMi+HDxIgjxUiIY2P6/qMl+H/4agCkUok1mSgSol3AlInWcBePK9KMDrnp9UFuErMXfY9uzDKKdsFU0NkAL6kITQqgevIcYodOliCiJlYFsqEyCkjUiBIqrGTKuADUibFBQzKg6PmRpZQBngVAN7EDeyDAEYC4IcQR0OlIaCQp0qHSkOdHlQLvICiSDsPuydyOlQBVilNCUEBcg85lSCc2M8gE15adMTxvqdhtgAFptAvgZsS4HWrSlTQlLJGD4HfqYNOpPJ41Wsm6pqW3gdeKaJa1CV4I9heYbnKi/Avv9R4o6v6LsrmAt4rjGS8usbxQJCXzjIvKusK6JEJqEXQFhxJ4UwlFgAnV3k1HFfhohDcJ8iLwunhAI8dUgX4nJ6d4x8G2fvig22cInf1tpWHxR4mZ4vkg5WslqcT/bGZF4B6O1ZfwkS5muQPGL3Eqb8rVtPYK0AhVsn3n7dBe41TaHIfOu7f3rbEU32sPjPb/aK2C6dQ5vvuhDsB5Yj1W/81kt045SwNfl+w3gQUgfW2b8f759jbOOXA+h2Z9Q6gCKzg/Hdz8O/h1AENhtL8XtTaLZ7aSi3z0Yz272Pv5FRrEtD6x3IrEiJbFclxGJy+10+19gdzK1j9QzKeaL7Kz5NkGRiTpkrKA0kXqf8PnXRLzLvvZhwAAAAASUVORK5CYII=",
+            url_sitio: "http://www.institutoseguro.com.ar/index.php"
+          }
+        })
+      ],
+      1
+    )
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-7b1e4507", module.exports)
+  }
+}
+
+/***/ }),
+/* 177 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(178)
+}
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(180)
+/* template */
+var __vue_template__ = __webpack_require__(181)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/PoderJudicial.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-4c3a5bcc", Component.options)
+  } else {
+    hotAPI.reload("data-v-4c3a5bcc", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 178 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(179);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(2)("aff7dc3e", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4c3a5bcc\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./PoderJudicial.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4c3a5bcc\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./PoderJudicial.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 179 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.poderJudicialStyle {\n\n  text-align: justify;\n}\n.btn-success {\n    color: #fff;\n    background-color: #7da258;\n    border-color: #cddbc2;\n}\n.botonJudicial {\n  text-align: center;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 180 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+
+  methods: {
+    iraSitioJudicial: function iraSitioJudicial() {
+      location.href = "http://www.jusentrerios.gov.ar/";
+    }
+  }
+
+});
+
+/***/ }),
+/* 181 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "poderJudicialStyle" }, [
+    _c("b", [_vm._v("Autoridades del Poder Judicial")]),
+    _vm._v(" "),
+    _c("br"),
+    _vm._v(" "),
+    _c("br"),
+    _vm._v(
+      " El Poder Judicial es uno de los tres poderes que conforman la provincia de Entre Ríos consagrados mediante el principio que establece el art. 1 de la Constitución Provincial: “La Provincia de Entre Ríos, como parte integrante de la Nación Argentina,\n  organiza su gobierno bajo la forma republicana representativa(…)”\n  "
+    ),
+    _c("br"),
+    _vm._v(" "),
+    _c("br"),
+    _vm._v(
+      " El Poder Judicial es ejercido por un Superior Tribunal de Justicia y demás tribunales o jurados establecidos por ley.\n  "
+    ),
+    _c("br"),
+    _vm._v(" "),
+    _c("br"),
+    _vm._v(
+      " Según establece la Constitución de Entre Ríos, el Superior Tribunal se compondrá por un número impar de miembros que no podrá ser inferior a cinco. Los miembros del Superior Tribunal serán inamovibles mientras dure su buena conducta y sólo podrán\n  ser removidos mediante el juicio político. (art 187, 189)\n  "
+    ),
+    _c("br"),
+    _vm._v(" "),
+    _c("br"),
+    _vm._v(
+      " Actualmente el Superior Tribunal está compuesto por 9 integrantes. Las atribuciones y disposiciones generales del Poder Judicial se encuentran definidas en la Constitución Provincial en la Sección VI, Capítulo II desde el art. 203 al 206.\n  "
+    ),
+    _c("br"),
+    _vm._v(" "),
+    _c("br"),
+    _vm._v(" "),
+    _c("b", [_vm._v("Ministerio Público.")]),
+    _vm._v(" "),
+    _c("br"),
+    _vm._v(" "),
+    _c("br"),
+    _vm._v(
+      " El Ministerio Público es un órgano autónomo integrante del Poder Judicial. Está compuesto por dos órganos independientes: Ministerio Público Fiscal, dirigido por el Procurador General y el Ministerio Público de Defensa dirigido por el Defensor\n  General. Sus competencias se encuentran definidas en la Constitución Provincial en la Sección VI, Capítulo III, artículos 207 y 208.\n\n  "
+    ),
+    _c("br"),
+    _vm._v(" "),
+    _c("br"),
+    _vm._v(" "),
+    _c(
+      "button",
+      {
+        staticClass: "btn btn-success botonJudicial",
+        on: { click: _vm.iraSitioJudicial }
+      },
+      [_vm._v("Ir a sitio web")]
+    )
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-4c3a5bcc", module.exports)
+  }
+}
+
+/***/ }),
+/* 182 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "containerNavbarLateral" }, [
+    _c("div", { staticClass: "row" }, [
+      _vm._m(0),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-sm-9" }, [
+        _c(
+          "div",
+          { staticClass: "tab-content", attrs: { id: "v-pills-tabContent" } },
+          [
+            _c(
+              "div",
+              {
+                staticClass: "tab-pane fade show active",
+                attrs: {
+                  id: "v-pills-home",
+                  role: "tabpanel",
+                  "aria-labelledby": "v-pills-home-tab"
+                }
+              },
+              [_c("ConsultaOrganismos")],
+              1
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              {
+                staticClass: "tab-pane fade show",
+                attrs: {
+                  id: "v-pills-poder-judicial",
+                  role: "tabpanel",
+                  "aria-labelledby": "v-pills-poder-judicial-tab"
+                }
+              },
+              [_c("PoderJudicial")],
+              1
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              {
+                staticClass: "tab-pane fade show",
+                attrs: {
+                  id: "v-pills-empresas-estado",
+                  role: "tabpanel",
+                  "aria-labelledby": "v-pills-empresas-estado-tab"
+                }
+              },
+              [_c("EmpresasEstado")],
+              1
+            )
+          ]
+        )
+      ])
+    ])
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-sm-3" }, [
+      _c("div", { staticClass: "card" }, [
+        _c(
+          "div",
+          {
+            staticClass: "nav flex-column nav-pills",
+            attrs: {
+              id: "v-pills-tab",
+              role: "tablist",
+              "aria-orientation": "vertical"
+            }
+          },
+          [
+            _c(
+              "a",
+              {
+                staticClass: "nav-link active",
+                attrs: {
+                  id: "v-pills-home-tab",
+                  "data-toggle": "pill",
+                  href: "#v-pills-home",
+                  role: "tab",
+                  "aria-controls": "v-pills-home",
+                  "aria-selected": "true"
+                }
+              },
+              [
+                _vm._v(
+                  "\n                Consulta de organismos\n              "
+                )
+              ]
+            ),
+            _vm._v(" "),
+            _c(
+              "a",
+              {
+                staticClass: "nav-link",
+                attrs: {
+                  id: "v-pills-profile-tab",
+                  "data-toggle": "pill",
+                  href: "#v-pills-profile",
+                  role: "tab",
+                  "aria-controls": "v-pills-profile",
+                  "aria-selected": "false"
+                }
+              },
+              [_vm._v("\n                Poder Ejecutivo\n              ")]
+            ),
+            _vm._v(" "),
+            _c(
+              "a",
+              {
+                staticClass: "nav-link",
+                attrs: {
+                  id: "v-pills-messages-tab",
+                  "data-toggle": "pill",
+                  href: "#v-pills-messages",
+                  role: "tab",
+                  "aria-controls": "v-pills-messages",
+                  "aria-selected": "false"
+                }
+              },
+              [_vm._v("\n              Organismos con sitios webs\n          ")]
+            ),
+            _vm._v(" "),
+            _c(
+              "a",
+              {
+                staticClass: "nav-link",
+                attrs: {
+                  id: "v-pills-settings-tab",
+                  "data-toggle": "pill",
+                  href: "#v-pills-settings",
+                  role: "tab",
+                  "aria-controls": "v-pills-settings",
+                  "aria-selected": "false"
+                }
+              },
+              [_vm._v("\n              Poder Legislativo\n          ")]
+            ),
+            _vm._v(" "),
+            _c(
+              "a",
+              {
+                staticClass: "nav-link",
+                attrs: {
+                  id: "v-pills-poder-judicial-tab",
+                  "data-toggle": "pill",
+                  href: "#v-pills-poder-judicial",
+                  role: "tab",
+                  "aria-controls": "v-pills-poder-judicial",
+                  "aria-selected": "false"
+                }
+              },
+              [_vm._v("\n              Poder Judicial\n          ")]
+            ),
+            _vm._v(" "),
+            _c(
+              "a",
+              {
+                staticClass: "nav-link",
+                attrs: {
+                  id: "v-pills-historia-casa-gobierno-tab",
+                  "data-toggle": "pill",
+                  href: "#v-pills-historia-casa-gobierno",
+                  role: "tab",
+                  "aria-controls": "v-pills-historia-casa-gobierno",
+                  "aria-selected": "false"
+                }
+              },
+              [
+                _vm._v(
+                  "\n                Organismos Constitucionales\n          "
+                )
+              ]
+            ),
+            _vm._v(" "),
+            _c(
+              "a",
+              {
+                staticClass: "nav-link",
+                attrs: {
+                  id: "v-pills-constitucion-simbolos-tab",
+                  "data-toggle": "pill",
+                  href: "#v-pills-constitucion-simbolos",
+                  role: "tab",
+                  "aria-controls": "v-pills-constitucion-simbolos",
+                  "aria-selected": "false"
+                }
+              },
+              [_vm._v("\n                Entes Autárquicos\n          ")]
+            ),
+            _vm._v(" "),
+            _c(
+              "a",
+              {
+                staticClass: "nav-link",
+                attrs: {
+                  id: "v-pills-empresas-estado-tab",
+                  "data-toggle": "pill",
+                  href: "#v-pills-empresas-estado",
+                  role: "tab",
+                  "aria-controls": "v-pills-empresas-estado",
+                  "aria-selected": "false"
+                }
+              },
+              [_vm._v("\n                Empresas del Estado\n          ")]
+            ),
+            _vm._v(" "),
+            _c(
+              "a",
+              {
+                staticClass: "nav-link",
+                attrs: {
+                  id: "v-pills-turismo-tab",
+                  "data-toggle": "pill",
+                  href: "#v-pills-turismo",
+                  role: "tab",
+                  "aria-controls": "v-pills-turismo",
+                  "aria-selected": "false"
+                }
+              },
+              [_vm._v("\n                Universidades públicas\n          ")]
+            )
+          ]
+        )
+      ])
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-69f189dd", module.exports)
+  }
+}
+
+/***/ }),
+/* 183 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(184);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(2)("08ba07f6", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-45f2d91a\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./BotonSubir.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-45f2d91a\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./BotonSubir.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 184 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/*botón up*/\n.boton-subir{\n  display: none;\n  background: #01afef;\n  border: thin solid #fff;\n  border-radius: 30px;\n  position: fixed;\n  right: 15px;\n  bottom:10px;\n  z-index: 999999999;\n\n  -webkit-box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.45);\n  box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.45);\n}\n/*evento hover*/\n.boton-subir:hover{\n}\n/*estilos para el tag i*/\n.boton-subir i{\n  color: #fff;\n  font-size: 2.2em;\n  padding: 5px 10px 7px 8px;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 185 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  created: function created() {
+    //invocamos al objeto (window) y a su método (scroll), solo se ejecutara si el usuario hace scroll en la página
+    $(window).scroll(function () {
+      if ($(this).scrollTop() > 300) {
+        //condición a cumplirse cuando el usuario aya bajado 301px a más.
+        $("#js_up").slideDown(300); //se muestra el botón en 300 mili segundos
+      } else {
+        // si no
+        $("#js_up").slideUp(300); //se oculta el botón en 300 mili segundos
+      }
+    });
+
+    //creamos una función accediendo a la etiqueta i en su evento click
+    $("#js_up i").on('click', function (e) {
+      e.preventDefault(); //evita que se ejecute el tag ancla (<a href="#">valor</a>).
+      $("body,html").animate({ // aplicamos la función animate a los tags body y html
+        scrollTop: 0 //al colocar el valor 0 a scrollTop me volverá a la parte inicial de la página
+      }, 3000); //el valor 700 indica que lo ara en 700 mili segundos
+      return false; //rompe el bucle
+    });
+  }
+});
+
+/***/ }),
+/* 186 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _vm._m(0)
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "a",
+      { staticClass: "boton-subir", attrs: { href: "#", id: "js_up" } },
+      [_c("i", { staticClass: "fas fa-chevron-up" })]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-45f2d91a", module.exports)
+  }
+}
+
+/***/ }),
+/* 187 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { staticClass: "gobiernoPageContainer" },
+    [
+      _c("Parallax", {
+        attrs: {
+          urlImage:
+            "https://www.publicdomainpictures.net/pictures/70000/velka/natural-green-background-1389459704YWX.jpg"
+        }
+      }),
+      _vm._v(" "),
+      _c("NavbarLateralGobierno"),
+      _vm._v(" "),
+      _c("BotonSubir")
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-46f4885f", module.exports)
+  }
+}
+
+/***/ }),
+/* 188 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(189)
+}
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(191)
+/* template */
+var __vue_template__ = __webpack_require__(196)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/views/ProvinciaPage.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-51edc719", Component.options)
+  } else {
+    hotAPI.reload("data-v-51edc719", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 189 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(190);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(2)("e37d6880", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-51edc719\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./ProvinciaPage.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-51edc719\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./ProvinciaPage.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 190 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.gobiernoPageContainer{\n  background-color: white;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 191 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_Parallax__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_Parallax___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__components_Parallax__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_NavbarLateral__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_NavbarLateral___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__components_NavbarLateral__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_BotonSubir__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_BotonSubir___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__components_BotonSubir__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  components: {
+    Parallax: __WEBPACK_IMPORTED_MODULE_0__components_Parallax___default.a,
+    NavbarLateral: __WEBPACK_IMPORTED_MODULE_1__components_NavbarLateral___default.a,
+    BotonSubir: __WEBPACK_IMPORTED_MODULE_2__components_BotonSubir___default.a
+  }
+
+});
+
+/***/ }),
+/* 192 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(193);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(2)("2f4c2ddc", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-99c57d40\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./NavbarLateral.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-99c57d40\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./NavbarLateral.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 193 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.containerNavbarLateral {\n  background-color: white;\n  color: black;\n  margin: 2%;\n\n  font-size: 1.0em;\n  font-weight: 500;\n}\na {\n  color: #0fb3f0;\n}\n.titulo {\n  font-size: 1.4em;\n  font-weight: 600;\n  color: #0fb3f0;\n}\n.texto {\n  text-align: justify;\n}\n.nav-pills .nav-link.active,\n.nav-pills .show>.nav-link {\n  background-color: #0fb3f0;\n}\np {\n  text-align: justify;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 194 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_Parallax__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_Parallax___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__components_Parallax__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({});
+
+/***/ }),
+/* 195 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _vm._m(0)
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "containerNavbarLateral" }, [
+      _c("div", { staticClass: "row" }, [
+        _c("div", { staticClass: "col-3" }, [
+          _c(
+            "div",
+            {
+              staticClass: "nav flex-column nav-pills",
+              attrs: {
+                id: "v-pills-tab",
+                role: "tablist",
+                "aria-orientation": "vertical"
+              }
+            },
+            [
+              _c(
+                "a",
+                {
+                  staticClass: "nav-link active",
+                  attrs: {
+                    id: "v-pills-home-tab",
+                    "data-toggle": "pill",
+                    href: "#v-pills-home",
+                    role: "tab",
+                    "aria-controls": "v-pills-home",
+                    "aria-selected": "true"
+                  }
+                },
+                [_vm._v("\n              Información\n            ")]
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                {
+                  staticClass: "nav-link",
+                  attrs: {
+                    id: "v-pills-profile-tab",
+                    "data-toggle": "pill",
+                    href: "#v-pills-profile",
+                    role: "tab",
+                    "aria-controls": "v-pills-profile",
+                    "aria-selected": "false"
+                  }
+                },
+                [_vm._v("\n              División política\n            ")]
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                {
+                  staticClass: "nav-link",
+                  attrs: {
+                    id: "v-pills-messages-tab",
+                    "data-toggle": "pill",
+                    href: "#v-pills-messages",
+                    role: "tab",
+                    "aria-controls": "v-pills-messages",
+                    "aria-selected": "false"
+                  }
+                },
+                [_vm._v("\n              Integración regional\n        ")]
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                {
+                  staticClass: "nav-link",
+                  attrs: {
+                    id: "v-pills-settings-tab",
+                    "data-toggle": "pill",
+                    href: "#v-pills-settings",
+                    role: "tab",
+                    "aria-controls": "v-pills-settings",
+                    "aria-selected": "false"
+                  }
+                },
+                [
+                  _vm._v(
+                    "\n              Demografía y capital humano\n        "
+                  )
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                {
+                  staticClass: "nav-link",
+                  attrs: {
+                    id: "v-pills-historia-tab",
+                    "data-toggle": "pill",
+                    href: "#v-pills-historia",
+                    role: "tab",
+                    "aria-controls": "v-pills-historia",
+                    "aria-selected": "false"
+                  }
+                },
+                [_vm._v("\n              Historia\n        ")]
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                {
+                  staticClass: "nav-link",
+                  attrs: {
+                    id: "v-pills-historia-casa-gobierno-tab",
+                    "data-toggle": "pill",
+                    href: "#v-pills-historia-casa-gobierno",
+                    role: "tab",
+                    "aria-controls": "v-pills-historia-casa-gobierno",
+                    "aria-selected": "false"
+                  }
+                },
+                [
+                  _vm._v(
+                    "\n              Historia de Casa de Gobierno\n        "
+                  )
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                {
+                  staticClass: "nav-link",
+                  attrs: {
+                    id: "v-pills-constitucion-simbolos-tab",
+                    "data-toggle": "pill",
+                    href: "#v-pills-constitucion-simbolos",
+                    role: "tab",
+                    "aria-controls": "v-pills-constitucion-simbolos",
+                    "aria-selected": "false"
+                  }
+                },
+                [_vm._v("\n              Constitución y símbolos\n        ")]
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                {
+                  staticClass: "nav-link",
+                  attrs: {
+                    id: "v-pills-turismo-tab",
+                    "data-toggle": "pill",
+                    href: "#v-pills-turismo",
+                    role: "tab",
+                    "aria-controls": "v-pills-turismo",
+                    "aria-selected": "false"
+                  }
+                },
+                [_vm._v("\n              Turismo\n        ")]
+              )
+            ]
+          )
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "col-9" }, [
+          _c(
+            "div",
+            { staticClass: "tab-content", attrs: { id: "v-pills-tabContent" } },
+            [
+              _c(
+                "div",
+                {
+                  staticClass: "tab-pane fade show active",
+                  attrs: {
+                    id: "v-pills-home",
+                    role: "tabpanel",
+                    "aria-labelledby": "v-pills-home-tab"
+                  }
+                },
+                [
+                  _c("div", { staticClass: "titulo" }, [
+                    _vm._v("\n            Información\n          ")
+                  ]),
+                  _vm._v(" "),
+                  _c("br"),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "texto" }, [
+                    _vm._v(
+                      "\n\n            La Provincia de Entre Ríos está ubicada en la región centro­este de la República Argentina, al sur del Continente Americano, con una superficie de 78. 781 km², ocupa el 2,83 % del total de la superficie del país. Limita al norte con la Provincia de Corrientes,\n            al este con la República Oriental del Uruguay, al sur con la Provincia de Buenos Aires y al oeste con la Provincia de Santa Fe. Geográficamente forma parte de la Mesopotamia Argentina e integra políticamente junto con las Provincias de Córdoba\n            y Santa Fe, la Región Centro. De especial relevancia para el MERCOSUR, Entre Ríos cobra importancia por su posición geográfica estratégica que comprende un paso obligado en el eje norte­sur de la República Argentina con Brasil y el eje este­oeste\n            comprendido por el Corredor Bioceánico que une Uruguay y Chile.\n            "
+                    ),
+                    _c("br"),
+                    _vm._v(
+                      " El relieve entrerriano presenta un paisaje de llanura sedimentaria originado en la erosión, levemente ondulada, de alturas no superiores a los 100 metros. Estas alturas, mal llamadas cuchillas, son en realidad lomadas que constituyen\n            una prolongación del relieve de Corrientes y que al ingresar a la provincia se divide en dos brazos: el occidental o de Montiel, de dirección sudoeste y que llega hasta las cercanías del arroyo Hernandarias y el brazo oriental o Grande, que\n            desde el sudeste llega hasta el sur del departamento Uruguay. Estas lomadas determinan la divisoria de aguas: las pendientes hacia el río Paraná y hacia los ríos Uruguay y Gualeguay. Además de estas lomadas, existen tres prolongaciones de\n            dirección Norte ­ Sur, entre los arroyos Nogoyá y Clé; otro, entre éste y el río Gualeguay y por último, otro, entre el río Gualeguay y el Gualeguaychú. Desde su propio nombre, la provincia denota la fuerte presencia de cauces hídricos que\n            han determinado su demarcación geográfica e influido en su economía. Los dos principales, el Paraná y el Uruguay, aglutinan a las grandes localidades en sus márgenes. Estos dos ríos forman subsistemas o pendientes dentro de la provincia a\n            los cuales se han sumado otros dos, el Gualeguay y el Guayquiraró.\n            "
+                    ),
+                    _c("br"),
+                    _vm._v(
+                      " El clima de la provincia se divide en dos regiones climáticas, la más importante se ubica en el centro sur del territorio, de clima Templado húmedo de llanura, con valores normales típicos de los climas templados con temperaturas promedio\n            de 10º en invierno y 26º en verano, las precipitaciones anuales en esta región promedian los 1000mm. La pequeña región al norte de la provincia, de clima Subtropical húmedo de llanura, presenta una amplitud térmica reducida, suaves inviernos\n            con temperaturas promedio de 13º y veranos con temperaturas que rondan los 27º, las precipitaciones anuales promedian los 1300mm.\n\n          "
+                    )
+                  ])
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  staticClass: "tab-pane fade",
+                  attrs: {
+                    id: "v-pills-profile",
+                    role: "tabpanel",
+                    "aria-labelledby": "v-pills-profile-tab"
+                  }
+                },
+                [
+                  _vm._v(
+                    '\n\n          Entre Ríos es un territorio pródigo en recursos naturales, rico en actividades productivas y con características singulares en sus "dos costas", bañadas por el Paraná y el Uruguay.\n\n          '
+                  ),
+                  _c("br"),
+                  _vm._v(
+                    " La provincia está organizada en 17 jurisdicciones denominadas departamentos, cada uno con su respectiva ciudad cabecera y una capital provincial, Paraná, la que alguna vez fue también sede del gobierno nacional en tiempos de la Confederación\n          Argentina, entre 1853 y 1861 y donde hoy residen los tres poderes del Estado entrerriano. Los departamentos son: Paraná, Diamante, Victoria, Gualeguay, Gualeguaychú, Uruguay, Colón, Concordia, La Paz, Villaguay, Tala, Nogoyá, Feliciano, Federación,\n          Federal, Islas del Ibicuy y San Salvador . Cada uno de los departamentos se encuentra compuesto por municipios. Todo centro de población estable de más de mil quinientos habitantes dentro del ejido constituye un municipio. El municipio es una\n          comunidad sociopolítica natural y esencial, con vida urbana propia e intereses específicos que unida por lazos de vecindad y arraigo territorial, concurre en la búsqueda del bien común. (Artículo 229 y 230 ­ Constitución de la Provincia). La\n          provincia de Entre Ríos está compuesta por un total de 78 municipios.\n          "
+                  ),
+                  _c("br"),
+                  _vm._v(
+                    "Las comunidades cuya población estable legalmente determinada no alcance el mínimo previsto para ser municipios constituyen comunas (ARTÍCULO 232­ Constitución de la Provincia). El gobierno de los centros rurales de población, en lo que\n          se refiere a los intereses comunales, está a cargo de una Junta de Gobierno (Ley 755 de Juntas de Gobierno). Actualmente la cantidad de Juntas de Gobierno asciende a 194.\n        "
+                  )
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  staticClass: "tab-pane fade",
+                  attrs: {
+                    id: "v-pills-messages",
+                    role: "tabpanel",
+                    "aria-labelledby": "v-pills-messages-tab"
+                  }
+                },
+                [
+                  _c("div", { staticClass: "titulo" }, [
+                    _vm._v("\n            Región Centro\n          ")
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "texto" }, [
+                    _c("br"),
+                    _vm._v(
+                      " Entre Ríos integra, junto a las provincias de Santa Fe y Córdoba, la Región Centro. Este es un espacio político subnacional, constituido con “… el fin de promover el desarrollo económico y social en virtud de lo establecido en el Art.\n            124 de la Constitución Nacional y el desarrollo humano, la salud, la educación, la ciencia, el conocimiento y la cultura …”\n            "
+                    ),
+                    _c("br"),
+                    _vm._v(
+                      " Entre Ríos adhirió en 1999 al Tratado de Integración Regional que ya habían firmado Córdoba y Santa Fe en 1998. En el tratado se establecieron los órganos con facultades propias para cumplir con los objetivos de la Región Centro En el\n            marco del Plan Estratégico para la Región Centro se definieron las catorce temáticas transversales a las tres provincias de la Región, a saber: Acción Social, Educación, Energía y Comunicaciones, Gobierno, Recursos Hídricos, Salud, Sistema\n            Intermodal de Transporte e Infraestructura, Cultura, Hacienda y Finanzas, Producción, Trabajo, Ciencia, Tecnología e Innovación, Medio Ambiente y Turismo.\n\n          "
+                    )
+                  ])
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  staticClass: "tab-pane fade",
+                  attrs: {
+                    id: "v-pills-settings",
+                    role: "tabpanel",
+                    "aria-labelledby": "v-pills-settings-tab"
+                  }
+                },
+                [
+                  _c("div", { staticClass: "texto" }, [
+                    _vm._v(
+                      "\n\n            Entre Ríos cuenta con una población aproximada de 1.236.000 habitantes, distribuida en 17 departamentos, 78 municipios y 169 comunas, lo que la convierte en la séptima provincia más poblada del país. Con una densidad de población promedio de 15,77 hab/km²,\n            denota una tendencia marcada ascendente desde el centro del territorio hacia los márgenes de los Ríos Uruguay y Paraná, siendo especialmente concentrada en los Departamentos Paraná donde la densidad llega a los 68,3 hab/km² y en el Departamento\n            Concordia con 52,2 hab/km². La tasa de alfabetización de la población alcanza el 97,9 por ciento con un índice de desarrollo humano (IDH) muy alto de 8,39, según datos del Programa de las Naciones Unidas para el Desarrollo, PNUD. La provincia\n            posee una gran diversidad de propuestas académicas y educativas, seis universidades concentran una amplia oferta de carreras que requieren los sectores productivos más dinámicos de la economía provincial, nacional y del continente, como así\n            también una abundante propuesta de carreras especializadas en las ciencias sociales, cubriendo en su totalidad la demanda de profesorados de nivel inicial y secundario, contabilizando en la actualidad un total de 33 profesorados, 80 carreras\n            de grado, 85 tecnicaturas y carreras de pregrado distribuidas por todo el territorio provincial con sus respectivas sedes, estas son:\n            "
+                    ),
+                    _c("br"),
+                    _vm._v(
+                      " · Universidad Nacional de Entre Ríos, (UNER). www.uner.edu.ar · Universidad Católica Argentina (UCA). www.uca.edu.ar · Universidad Adventista del Plata (UAP). www.uap.edu.ar · Universidad Tecnológica Nacional (UTN). www.frp.utn.edu.ar\n            · Universidad de Concepción del Uruguay (UCU). www.ucu.edu.ar · Universidad Autónoma de Entre Ríos (UADER). www.uader.edu.ar\n\n            "
+                    ),
+                    _c("br"),
+                    _vm._v(" "),
+                    _c("br"),
+                    _vm._v(" ENTRE RÍOS Y LA INMIGRACIÓN\n            "),
+                    _c("br"),
+                    _vm._v(" "),
+                    _c("br"),
+                    _vm._v(
+                      " Entre Ríos fue la primera provincia del país en la cual se establece una colonia, nos estamos refiriendo a la colonia agrícola y militar “Las Conchas” que fuera fundada en 1853 por el Coronel Clemente por órdenes del General Justo José\n            de Urquiza. El General Urquiza dio un gran impulso a la colonización. Por su iniciativa, el 1º de julio de 1857 se instaló en el este de la provincia un importante grupo de suizos, provenientes en su mayoría del cantón de Valais. Allí fundaron\n            colonia San José y comenzaron a cultivar la tierra,en 1859 llegaron nuevos grupos de suizos que procedían de los cantones rurales, que se instalaron en Villa Urquiza en la costa del Paraná. Sus habitantes hablaban francés, italiano y/o alemán\n            y algunos eran católicos y otros protestantes. Se introdujeron normas de convivencia democrática y se ensayó el sufragio secreto por primera vez en la historia argentina. El 8 de marzo de 1875 fue sancionada la ley sobre traza de villas y\n            colonias, que estableció y regularizó el trazado de los ejidos de pueblos y colonias, fue entonces que Entre Ríos presenció un sustancial incremento en el establecimiento de colonias agrícolas, hasta 1893 se habían fundado 171 colonias agrícolas\n            entre iniciativas nacionales, provinciales y privadas. Ruso-alemanes del Volga procedentes de la región de Sarátov cobraron relevancia por entonces, mayoritariamente agricultores y avicultores ingresaron en el año 1878 y formaron aldeas en\n            la colonia General Alvear, del departamento de Diamante, siendo estas la Aldea Valle María, Aldea Protestante, Aldea Spatzenkutter, Aldea Salto y Aldea San Francisco. Luego se distribuyeron por toda la provincia. A fines del siglo XIX, en\n            el año 1891 a través del plan nacional de inmigración ingresaron hasta 1896 más de 20.000 judíos provenientes de Europa del este, principalmente de Rumania y Rusia, se dispersaron por las colonias Lucienville, Clara, San Antonio, López, Berro\n            y Santa Isabel. Se dedicaron a la cría de ganado, la industria lechera, la avicultura y la fruticultura, debido a sus habilidades y actividades fueron conocidos culturalmente y nombrados los “gauchos judíos”. Hubo también grandes contingentes\n            de italianos la mayor parte de los llegados eran del sur de Italia, sobre todo de la Campania, Calabria y Sicilia. Esto se debió a los problemas estructurales de la región producto de la industrialización del norte y marginalización del sur,\n            abandonaron la península por las condiciones de pobreza. También forman parte del territorio entrerriano un importante número de españoles especialmente catalanes, castellanos y leoneses. El censo de población realizado en 1895 señaló la presencia\n            en Entre Ríos de 63.050 inmigrantes extranjeros, de los cuales 20.609 eran italianos, 10.045 rusos alemanes del Volga, 2.141 austríacos (principalmente eslovenos), 1.645 alemanes, 6.374 españoles, 4.615 franceses y 2.178 suizos. Con el tiempo,\n            inmigrantes y criollos compartieron educación, trabajo y sacrificio, y todos juntos forjaron un gran pueblo sobre la tierra generosa de Entre Ríos.\n          "
+                    )
+                  ])
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  staticClass: "tab-pane fade",
+                  attrs: {
+                    id: "v-pills-historia",
+                    role: "tabpanel",
+                    "aria-labelledby": "v-pills-historia-tab"
+                  }
+                },
+                [
+                  _c("div", { staticClass: "texto" }, [
+                    _c("div", { staticClass: "titulo" }, [
+                      _vm._v("Nuestra historia")
+                    ]),
+                    _vm._v(" "),
+                    _c("br"),
+                    _vm._v(
+                      " Reseña Histórica de la Provincia de Entre Ríos\n            "
+                    ),
+                    _c("br"),
+                    _vm._v(
+                      " Al llegar la conquista española, la costa entrerriana del río Paraná estaba habitada por los Chaná-Timbúes, aborígenes que se distinguían por la artesanía en la cerámica incisa. Por esas labores, los arqueólogos los han identificado como\n            ribereños plásticos, y los consideran los primeros habitantes que trabajaron la madera, el cuero, el hueso y la piedra (Mario Alarcón Muñiz).\n            "
+                    ),
+                    _c("br"),
+                    _vm._v(
+                      ' Con los años, los representantes de la cultura charrúa, minuán, chaná, guaraní o querandí, hábiles cazadores, agricultores y pescadores, dejarían sus huellas indelebles en los 78.781 kilómetros cuadrados del actual territorio provincial,\n            ubicado geográficamente en la Mesopotamia argentina junto a Corrientes y Misiones, y definido políticamente en la actualidad como integrante de la Región Centro junto a Córdoba y Santa Fe. Caciques visionarios y valientes como Aguará, Manchado,\n            Tabaré, Zapicán, Manuá, Guayuzalo, Carabí, Tacuabé y Juan Yasú, formaron parte de la tierra en plena madurez, de la tierra de sangre vital, denominada entonces Abya Yala. Presencia europea. El río Uruguay "fue descubierto y explorado, en su\n            curso inferior, en enero de 1520, por Juan Rodríguez Serrano, capitán de la expedición de Magallanes, quien daría la primera vuelta al mundo y recorrería el Uruguay hasta cerca de Gualeguaychú" (Filiberto Reula). En cuanto al río Paraná, fue\n            el mismo contingente colonizador el descubridor de su desembocadura, pues con absoluta certeza lo describe en su mapa el cronista acreditado Pigaffeta. El historiador Filiberto Reula, afirma también que el grumete Francisco del Puerto, que\n            sobreviviera en febrero de 1516 al ataque perpetrado por los guaraníes a Solís y sus acompañantes, se convertiría en el primer europeo que conoció el suelo entrerriano. Parroquias y villas. Numerosas localidades de la provincia tuvieron su\n            despertar con la creación de la parroquia. Tal es el caso de Paraná, a partir del 23 de octubre de 1730, que en la figura del padre Francisco Arias Montiel, designado párroco de la Otra Banda del Paraná, reconoce al sacerdote pionero de la\n            comunidad que inauguró la vida espiritual de la comarca costera. Tiempo después, a mediados de 1779, en su primera recorrida por la Diócesis de Buenos Aires, monseñor Sebastián Malvar y Pinto observa gran cantidad de pobladores en diversos\n            rincones del monte entrerriano, poniendo en marcha su proyecto fundacional de pequeñas capillas y aconsejando al virrey Vértiz y Salcedo la necesidad de organizar determinadas poblaciones. La presencia de don Tomás de Rocamora, en 1782, permitió\n            la elaboración del primer documento económico, informe que reviste enorme trascendencia para la región, pues auguraba el 11 de agosto de aquel año que "fuera pleitos, valga la razón y asegúrese Vuestra Excelencia que ejecutado como planteo,\n            antes de muchos años será la de Entre Ríos la mejor provincia de esta América". En marzo, junio y octubre de 1783, el fundador de pueblos, materializaría la puesta en marcha de las villas de San Antonio de Gualeguay, Concepción del Uruguay\n            y San José de Gualeguaychú, respectivamente.\n            '
+                    ),
+                    _c("br"),
+                    _vm._v(" "),
+                    _c("br"),
+                    _vm._v(" "),
+                    _c("br"),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "titulo" }, [
+                      _vm._v(
+                        "\n              Entre Ríos, protagonista de la historia del país.\n            "
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("br"),
+                    _vm._v(
+                      ' Libertad y principios republicanos. La figura de Bartolomé Zapata, recuperando con un grupo de paisanos el manejo de los cabildos que estaban en manos de los españoles, a comienzos de 1811, sembró la semilla de la rebeldía y de los sueños\n            nuevos en los pechos de los criollos viejos. El pueblo entrerriano "fue de los primeros en pronunciarse por la causa de Mayo. Su apoyo gravitó decisivamente en el triunfo de la libertad y de los principios republicanos y federalistas de la\n            gran Revolución de 1810. Interpretando cabalmente el ideario de Mayo, el pueblo de los antiguos Partidos de Entre Ríos no cejó en la lucha por la conquista de la libertad y fue la primera región del actual territorio nacional que logró, por\n            propio esfuerzo, la autonomía política. La consiguió venciendo a las huestes directoriales en el Combate del Espinillo, el 22 de febrero de 1814. Inició así la destrucción del antiguo orden administrativo y político que los gobiernos de Buenos\n            Aires a toda costa querían conservar intangible" (Facundo Arce). Artigas y la Liga de los Pueblos Libres. Entre Ríos, junto a Corrientes, Misiones, la Banda Oriental y amplios sectores políticos y sociales de Santa Fe y Córdoba, adhirieron\n            a los principios democráticos y republicanos de José Gervasio Artigas, quien reivindicó siempre a los pueblos originarios y fomentó la distribución de la tierra entre los más necesitados. El jefe de los orientales y Protector de los Pueblos\n            Libres había izado al tope del mástil en los Potreros de Arerunguá la Bandera Federal, actitud que imitara Eusebio Hereñú dos meses después en Paraná. Las instrucciones a los hombres que nos representarían en la Asamblea del Año XIII se basaban\n            en la voluntad de fundar una república soberana, sobre las bases de la justicia, la libertad y la democracia. Se pedía al mismo tiempo la declaración de la independencia absoluta de las colonias, no admitiéndose otro sistema que el de la confederación,\n            promoviéndose la libertad civil y religiosa. La Liga de los Pueblos Libres, entre 1815 y 1820, gestada por el vencedor de Las Piedras, llenó de esperanza y entusiasmo a los valientes hijos de la región guaranítica, los mismos que lo habían\n            acompañado en el Éxodo Oriental y que escucharon a su jefe jurar ante su pueblo "preferir la indigencia y la muerte a la dominación extranjera". Ramírez y la República de Entre Ríos. Nacido en Concepción del Uruguay, Francisco Ramírez llevó\n            la adhesión de su gente a los ideales de Mayo. Luego, compartió con Artigas las luchas por la causa federal. Finalmente, y luego del desgraciado desencuentro con su antiguo aliado, gestó, el 29 de septiembre de 1820, la República de Entre\n            Ríos, conformada por esta provincia y sus hermanas de Corrientes y Misiones. La muerte, acaecida en San Carlos de la Esquina, 9 kilómetros antes de San Francisco del Chañar, en el norte de Córdoba, le impidió concretar sus anhelos, claramente\n            identificados con la organización republicana y representativa, que fueran sintetizados oportunamente en el fundamentado Reglamento dado a conocer desde Corrientes, pocos meses antes del desenlace fatal. De cualquier manera, los altos ejemplos\n            morales y su conducta admirada y respetada por sus comprovincianos, siguen alumbrando los escenarios más genuinos de la entrerrianía. Urquiza y la organización nacional El general Justo José de Urquiza, después de Caseros, convocó a los representantes\n            de los pueblos hermanos para firmar el Acuerdo de San Nicolás. En 1853 y gracias a su inquebrantable voluntad de servir a la patria, llevó adelante el proceso histórico que finalizó con la jura de la Constitución Nacional. En marzo de 1854\n            asumió como primer presidente de la Confederación Argentina, oportunidad en que se declaró federalizado todo el territorio de la provincia de Entre Ríos y se instalaron las autoridades de los respectivos poderes en la ciudad de Paraná, convertida\n            por entonces en una referencia ineludible en el momento de lograr la organización del país. Cabe destacar que al término de este período, y luego de los abreviados mandatos de los presidentes Derqui y Pedernera, el gobierno federal, con sede\n            en la capital de Entre Ríos, clausuró esta etapa tan significativa para la República y, así, el Estado provincial recuperó su autonomía, que por voluntad de los ciudadanos aprobó su Constitución en 1860. Tiempos de la Confederación Argentina.\n            La separación de Buenos Aires de la Confederación impidió que se estableciera en ella el gobierno nacional. Entonces, Paraná fue designada como capital de la Confederación y se transformó en un centro político y cultural de importancia. La\n            población creció con el aporte de los hombres que, en representación de sus provincias, se instalaron en la nuestra. La ciudad fue el territorio elegido por Domingo Faustino Sarmiento para aplicar su política educativa. La primera escuela\n            normal de la Argentina comenzó a funcionar el 16 de agosto de 1871, en lo que fue el edificio de la vieja casa de gobierno de la Confederación. La educación y los inmigrantes. Establecimientos de gran relevancia para la educación argentina\n            y americana abrieron sus puertas en esta tierra. Nombrar al Colegio Histórico de Concepción del Uruguay, fundado por Urquiza (por entonces gobernador de Entre Ríos) en 1849 y la Escuela Normal de Paraná, creación de Domingo Faustino Sarmiento\n            en 1871, es dar ejemplos del espíritu de superación que inundaba el corazón de aquellos ciudadanos y que permitió la adecuada formación de los jóvenes que provenían de numerosas provincias argentinas y países vecinos. Paralelamente, las amplias\n            y generosas puertas de esta provincia se abrieron para que los inmigrantes de todos los países del mundo pudieran trabajar la tierra y encontrar la paz y la libertad, elementos indispensables para dar forma a un proyecto de vida y cantar junto\n            a los antiguos pobladores del verde profundo, los nuevos himnos de laboriosidad y progreso. El hombre entrerriano que ha tenido influencia "en las guerras de la creación nacional y su gravitación profunda en las etapas sucesivas en que se\n            concreta, con esfuerzos dolorosos, la civilidad argentina", admite que el paisaje de Entre Ríos "ha ido transformando poco a poco la conformación expresiva de sus pobladores. Lo vemos en los descendientes de los extranjeros de más acusada\n            cristalización racial. El hijo del germano, del ruso o del hebreo tiene ya, en su modelación fisonómica, algo del oriundo de Montiel" (Alberto Gerchunoff) . Marco Jurídico Provincial Actual. La provincia de Entre Ríos realizó el último proceso\n            de Reforma Constitucional en el año 2008, para lo cual se creó la Convención Constituyente mediante la Ley N° 9768. El Juramento de la Constitución se realizó en la Ciudad de Concepción del Uruguay en el mes de Octubre de 2008. Fuente: Entre\n            Ríos “Un fresco abrazo de agua la nombra para siempre” (2016) Dirección: Rina Deymonnaz Perottino- Melina Tempelópoulos, sobre una idea de proyecto del fotógrafo Gustavo Cabral. Ed Borsellino Impresos S.R.L Rosario Textos: Roberto Romani,\n            Emilio Ruberto, Raúl Balbi, Nicolás Rigaudi, Clara Cosoy, Rina Deymonnaz Perottino, Claudio Cañete, Pablo Suárez.\n          '
+                    )
+                  ])
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  staticClass: "tab-pane fade",
+                  attrs: {
+                    id: "v-pills-historia-casa-gobierno",
+                    role: "tabpanel",
+                    "aria-labelledby": "v-pills-historia-casa-gobierno-tab"
+                  }
+                },
+                [
+                  _c("div", { staticClass: "titulo" }, [
+                    _vm._v(" Historia Casa de Gobierno")
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "texto" }, [
+                    _c("br"),
+                    _vm._v(
+                      " Con la reforma de la Constitución de 1883, promulgada por el Gobernador Eduardo Racedo; se dispone el traslado de la Capital provincial desde Concepción del Uruguay a la ciudad de Paraná. Por ello, se establece la construcción de un edificio\n            público que nuclee a las autoridades entrerrianas para dinamizar sus tareas. En 1884, se dicta la ley que destina el predio comprendido entre las calles Córdoba, Laprida, Santa Fe y México, para llevar a cabo dichas obras. Éstas comienzan\n            a fines de 1885 a cargo del Arquitecto Bernardo Rígoli y el maestro mayor Luis Sesarego. En 1888 se habilita la primera parte del edificio, incluyendo las veredas externas. Un año después, concluyen las obras y se termina el recinto legislativo\n            donde operaban ambas cámaras.\n            "
+                    ),
+                    _c("br"),
+                    _vm._v(
+                      " El Museo Casa de Gobierno de Entre Ríos nace con el propósito de recuperar la historia y la arquitectura de uno de los edificios más emblemáticos de la provincia; exhibiendo al público fotografías, maquetas, muebles, documentos y demás\n            objetos que forman parte de la vida institucional de esta edificación.\n            "
+                    ),
+                    _c("br"),
+                    _vm._v(
+                      " Para ello, contamos con cinco diferentes salas que ofrecen un recorrido por los orígenes de Casa de Gobierno; pasando por el Poder Ejecutivo y Legislativo; una sala de extensión multimedial provista de tecnología de punta para propuestas\n            divulgativas y culturales como talleres, charlas, proyecciones audiovisuales; y por último, una sala dedicada a los trabajadores del Estado.\n\n          "
+                    )
+                  ])
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  staticClass: "tab-pane fade",
+                  attrs: {
+                    id: "v-pills-constitucion-simbolos",
+                    role: "tabpanel",
+                    "aria-labelledby": "v-pills-constitucion-simbolos-tab"
+                  }
+                },
+                [
+                  _c("div", { staticClass: "titulo" }, [
+                    _vm._v(" Constitución provincial ")
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "texto" }, [
+                    _c("br"),
+                    _vm._v(
+                      "La Constitución de Entre Ríos fue la primera sancionada por una provincia argentina. Fue obra del Gobernador Lucio Norberto Mansilla quien dictó el “Estatuto Constitucional de la Provincia” el 16 de Junio de 1822. Eminentes juristas como\n            Juan Bautista Alberdi han hecho su elogio. Más acá en el tiempo Carlos Sánchez Viamonte lo considera el más importante y completo antecedente constitucional, antes de 1853. Establecía el sistema de gobierno representativo y republicano y enumeraba\n            las garantías constitucionales muchas de las cuales han pasado textualmente a la Constitución actual. Se establecía una clara separación de poderes, entre un gobernador (ejecutivo), elegido por los diputados (legislativo) y un Poder Judicial\n            ejercido por jueces y tribunales. En 1860 mediante la Convención Constituyente reunida en Paraná, se dictó un nuevo texto constitucional para la provincia en consonancia con los cambios políticos que se venían produciendo en el territorio\n            nacional, por el cual la Provincia de Buenos Aires se integraba a la Confederación y la Ciudad de Paraná dejaría de ser la capital provisional, eligiéndose a Justo José de Urquiza como gobernador de la restablecida Provincia de Entre Ríos.\n            Veintitrés años pasarían hasta 1883 y el entonces Gobernador Eduardo Racedo, decidió introducir algunas reformas, que incluyó novedosos avances en derechos humanos y en la organización de la educación, que por primera vez se proclamó gratuita,\n            laica y obligatoria en el nivel primario. Fue hasta 1903 que la constitución no sufrió cambios. Las reformas impulsadas por el entonces Gobernador Enrique Carbó favorecían a las minorías partidarias, por las cuales el partido ganador de las\n            elecciones obtendría dos diputados, mientras que el perdedor era beneficiado con uno. En el año 1933 durante la gestión del Gobernador Luis Etchevehere se llevó a cabo una reforma integral, la cual fue considerada de avanzada para su época\n            en materia de derechos sociales. Se instauró el voto femenino, la promoción y fomento del cooperativismo, las bases de un moderno sistema de Servicio Civil (empleo público); en el ámbito judicial se estableció la inclusión del “habeas corpus”\n            y el amparo judicial, además de una importante reforma electoral en materia de reelección de gobernadores y mecanismos electivos de los intendentes. Por último, el 11 de octubre de 2008 quedó sancionada la nueva reforma al texto constitucional,\n            esta vez con la necesidad de modernizar la carta magna al contexto del siglo XXI. La Honorable Convención Constituyente fue el fruto de un proceso democrático y participativo ejemplar cuyo consenso contó con el trabajo de cuarenta y cinco\n            convencionales, representantes de cinco bloques políticos, y la ciudadanía mediante la presentación de ciento sesenta y dos proyectos de reforma constitucional; constituyéndose así en un antecedente único en las reformas provinciales de nuestro\n            país y convirtiendo a la Constitución de la Provincia de Entre Ríos en un texto modelo en toda América del Sur, manteniendo siempre la línea vanguardista que evoca el espíritu de los constituyentes que nos precedieron.\n          "
+                    )
+                  ])
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  staticClass: "tab-pane fade",
+                  attrs: {
+                    id: "v-pills-turismo",
+                    role: "tabpanel",
+                    "aria-labelledby": "v-pills-turismo-tab"
+                  }
+                },
+                [
+                  _c("div", { staticClass: "titulo" }, [
+                    _vm._v(" Entre Ríos, una tierra diferente. ")
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "texto" }, [
+                    _c("br"),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "card p-3 text-right" }, [
+                      _c("blockquote", { staticClass: "blockquote mb-0" }, [
+                        _c("p", [
+                          _vm._v(
+                            "\n                  El turismo de la Provincia de Entre Ríos se encuentra trazado por las enormes bondades de sus recursos naturales y belleza natural sus ríos, playas, aguas termales y su tierra. La tranquilidad y los paisajes provinciales se combinan con el cálido servicio\n                  de los entrerrianos. Capital Nacional de los Circuitos Termales y emblemática en el despliegue de sus Carnavales, la provincia de Entre Ríos cuenta con innumerables actividades y productos turísticos.\n                "
+                          )
+                        ])
+                      ])
+                    ])
+                  ])
+                ]
+              )
+            ]
+          )
+        ])
+      ])
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-99c57d40", module.exports)
+  }
+}
+
+/***/ }),
+/* 196 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { staticClass: "gobiernoPageContainer" },
+    [
+      _c("Parallax", {
+        attrs: {
+          urlImage:
+            "http://kb4images.com/images/green-hd-wallpaper/37518744-green-hd-wallpaper.jpg"
+        }
+      }),
+      _vm._v(" "),
+      _c("NavbarLateral"),
+      _vm._v(" "),
+      _c("BotonSubir")
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-51edc719", module.exports)
+  }
+}
+
+/***/ }),
+/* 197 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(198)
+}
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(200)
+/* template */
+var __vue_template__ = __webpack_require__(206)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/views/TransparenciaPage.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-3dd1a305", Component.options)
+  } else {
+    hotAPI.reload("data-v-3dd1a305", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 198 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(199);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(2)("1a9cb74c", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-3dd1a305\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./TransparenciaPage.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-3dd1a305\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./TransparenciaPage.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 199 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.transparenciaPageContainer{\n\n  /*background-color: white;*/\n  font-weight: 600;\n}\n\n/*.titulo {\n\n  font-size: 2em;\n  color: #0fb3f0;\n  margin:2%;\n\n\n}*/\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 200 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_Parallax__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_Parallax___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__components_Parallax__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_NavbarLateral__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_NavbarLateral___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__components_NavbarLateral__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_BotonSubir__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_BotonSubir___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__components_BotonSubir__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_LinksCards__ = __webpack_require__(201);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_LinksCards___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__components_LinksCards__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  components: {
+    Parallax: __WEBPACK_IMPORTED_MODULE_0__components_Parallax___default.a,
+    BotonSubir: __WEBPACK_IMPORTED_MODULE_2__components_BotonSubir___default.a,
+    LinksCards: __WEBPACK_IMPORTED_MODULE_3__components_LinksCards___default.a
+  }
+
+});
+
+/***/ }),
+/* 201 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(202)
+}
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(204)
+/* template */
+var __vue_template__ = __webpack_require__(205)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/LinksCards.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-ad6f88be", Component.options)
+  } else {
+    hotAPI.reload("data-v-ad6f88be", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 202 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(203);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(2)("52daf612", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-ad6f88be\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./LinksCards.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-ad6f88be\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./LinksCards.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 203 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.cardss{\n\n  background-color: #90af71;\n\n  margin:5%;\n\n  -webkit-box-shadow: -1px 6px 18px -7px rgba(0,0,0,0.75);\n  box-shadow: -1px 6px 18px -7px rgba(0,0,0,0.75);\n}\n.fontCards{\n  font-size: 2.5em;\n  color:white;\n}\n\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 204 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+
+  props: ['src_img'],
+
+  methods: {
+
+    jqueryFunctions: function jqueryFunctions() {
+      $('#card1').mouseover(function () {
+        $('#card1').addClass('animated pulse');
+      });
+
+      $('#card1').mouseleave(function () {
+        $('#card1').removeClass('animated pulse');
+      });
+      $('#card2').mouseover(function () {
+        $('#card2').addClass('animated pulse');
+      });
+
+      $('#card2').mouseleave(function () {
+        $('#card2').removeClass('animated pulse');
+      });
+
+      $('#card3').mouseover(function () {
+        $('#card3').addClass('animated pulse');
+      });
+      $('#card3').mouseleave(function () {
+        $('#card3').removeClass('animated pulse');
+      });
+
+      $('#card4').mouseover(function () {
+        $('#card4').addClass('animated pulse');
+      });
+
+      $('#card4').mouseleave(function () {
+        $('#card4').removeClass('animated pulse');
+      });
+
+      $('#card5').mouseover(function () {
+        $('#card5').addClass('animated pulse');
+      });
+      $('#card5').mouseleave(function () {
+        $('#card5').removeClass('animated pulse');
+      });
+
+      $('#card6').mouseover(function () {
+        $('#card6').addClass('animated pulse');
+      });
+      $('#card6').mouseleave(function () {
+        $('#card6').removeClass('animated pulse');
+      });
+    }
+  },
+
+  mounted: function mounted() {
+
+    this.jqueryFunctions();
+  }
+});
+
+/***/ }),
+/* 205 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _vm._m(0)
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "row" }, [
+      _c("div", { staticClass: "col-sm-4" }, [
+        _c("div", { staticClass: "card cardss", attrs: { id: "card1" } }, [
+          _c("div", { staticClass: "card-body" }, [
+            _c(
+              "a",
+              {
+                staticClass: "fontCards",
+                attrs: {
+                  href:
+                    "https://www.entrerios.gov.ar/minecon/index.php?codigo=76&codsubmenu=85&menu=menu&modulo=indetalle1"
+                }
+              },
+              [_vm._v("\n          Presupuesto general anual.\n        ")]
+            )
+          ])
+        ])
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-sm-4" }, [
+        _c("div", { staticClass: "card cardss", attrs: { id: "card2" } }, [
+          _c("div", { staticClass: "card-body" }, [
+            _c(
+              "a",
+              {
+                staticClass: "fontCards",
+                attrs: {
+                  href:
+                    "https://www.entrerios.gov.ar/minecon/index.php?codigo=76&codsubmenu=86&menu=menu&modulo=indetalle2"
+                }
+              },
+              [_vm._v("\n          Presupuesto plurianual.\n        ")]
+            )
+          ])
+        ])
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-sm-4" }, [
+        _c("div", { staticClass: "card cardss", attrs: { id: "card3" } }, [
+          _c("div", { staticClass: "card-body" }, [
+            _c(
+              "a",
+              {
+                staticClass: "fontCards",
+                attrs: {
+                  href:
+                    "https://www.entrerios.gov.ar/minecon/index.php?codigo=76&codsubmenu=87&menu=menu&modulo=indetalle3"
+                }
+              },
+              [_vm._v("\n          Ingresos públicos.\n        ")]
+            )
+          ])
+        ])
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-sm-4" }, [
+        _c("div", { staticClass: "card cardss", attrs: { id: "card4" } }, [
+          _c("div", { staticClass: "card-body" }, [
+            _c(
+              "a",
+              {
+                staticClass: "fontCards",
+                attrs: {
+                  href: "https://www.entrerios.gov.ar/contaduria/index.php"
+                }
+              },
+              [_vm._v("\n          Información fiscal.\n        ")]
+            )
+          ])
+        ])
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-sm-4" }, [
+        _c("div", { staticClass: "card cardss", attrs: { id: "card5" } }, [
+          _c("div", { staticClass: "card-body" }, [
+            _c(
+              "a",
+              {
+                staticClass: "fontCards",
+                attrs: {
+                  href:
+                    "https://www.entrerios.gov.ar/minecon/index.php?codigo=76&codsubmenu=89&menu=menu&modulo=indetalle5"
+                }
+              },
+              [_vm._v("\n          Nómina de personal.\n        ")]
+            )
+          ])
+        ])
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-sm-4" }, [
+        _c("div", { staticClass: "card cardss", attrs: { id: "card6" } }, [
+          _c("div", { staticClass: "card-body" }, [
+            _c(
+              "a",
+              {
+                staticClass: "fontCards",
+                attrs: {
+                  href:
+                    "https://www.entrerios.gov.ar/minecon/index.php?codigo=76&codsubmenu=90&menu=menu&modulo=indetalle6"
+                }
+              },
+              [_vm._v("\n          Planta de personal.\n        ")]
+            )
+          ])
+        ])
+      ])
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-ad6f88be", module.exports)
+  }
+}
+
+/***/ }),
+/* 206 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { staticClass: "transparenciaPageContainer" },
+    [
+      _c("Parallax", {
+        attrs: {
+          urlImage:
+            "https://www.entrerios.gov.ar/portal/img/enca_transparencia.png"
+        }
+      }),
+      _vm._v(" "),
+      _c("div", { staticClass: "card" }, [
+        _c("div", { staticClass: "card-header" }, [
+          _vm._v("\n      Información de finanzas\n    ")
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "card-body" }, [_c("LinksCards")], 1)
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "card" }, [
+        _c("div", { staticClass: "card-header" }, [
+          _vm._v("\n      Información de licitaciones\n    ")
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "card-body" }, [_c("LinksCards")], 1)
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "card" }, [
+        _c("div", { staticClass: "card-header" }, [
+          _vm._v("\n      Información de estadísticas y censos\n    ")
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "card-body" }, [_c("LinksCards")], 1)
+      ]),
+      _vm._v(" "),
+      _c("BotonSubir")
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-3dd1a305", module.exports)
+  }
+}
+
+/***/ }),
+/* 207 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
 
 /***/ })
 /******/ ]);

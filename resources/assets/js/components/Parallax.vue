@@ -27,7 +27,8 @@ export default {
           position: 'absolute',
           zIndex: '500',
           opacity: '0.8',
-          backgroundImage: `url('${this.urlImage}')`
+          backgroundImage: `url('${this.urlImage}')`,
+          backgroundPosition:'41% 100px'
 
         }
 
@@ -96,8 +97,36 @@ export default {
 </script>
 
 <style>
-.containerParallel{
-  height: 400px;
+
+.containerParallel {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  height: 320px;
+  justify-content: space-around;
+  position: relative;
+  width: 100%;
+}
+.containerParallel section {
+  width: 100%;
+  height: 70vh;
+  flex: 1;
+  display: flex;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  background-color: #000;
+}
+
+.boton{
+ align-items: center;
+ padding: 0 10px;
+ border: 1px solid rgba(238,238,238 ,1);
+ border-radius: 5px;
+ color: rgba(117,117,117 ,1);
+ box-shadow: 5px 10px 20px -20px rgba(85,172,238 ,1);
 }
 
 </style>

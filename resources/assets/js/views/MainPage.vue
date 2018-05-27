@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="mainPage">
 
   <Parallax urlImage="https://www.entrerios.gov.ar/portal/userfiles/banner/banner_5.png" />
 
@@ -24,13 +24,14 @@
 
   <div class="row">
 
-    <ImagenesOrganismos v-for="imagenOrganismo in imagenesOrganismos" :imagenOrganismo="imagenOrganismo" />
+    <ImagenesOrganismos v-for="imagenOrganismo in imagenesOrganismos" :imagenOrganismo="imagenOrganismo" :key="imagenOrganismo.id" />
 
   </div>
 
   <NumerosImportantes />
 
   <Footer />
+  <SubFooter />
 
 </div>
 </template>
@@ -47,6 +48,7 @@ import BarraBotones from '../components/BarraBotones';
 import Noticias from '../components/Noticias';
 import Flyers from '../components/Flyers';
 import Footer from '../components/Footer';
+import SubFooter from '../components/SubFooter';
 import NumerosImportantes from '../components/NumerosImportantes';
 import Carrousel from '../components/Carrousel';
 import ImagenesOrganismos from '../components/ImagenesOrganismos';
@@ -56,21 +58,27 @@ export default {
   data: function() {
     return {
       imagenesOrganismos: [{
+          id:1,
           src_img: 'https://www.entrerios.gov.ar/portal/userfiles/images/otras_imagenes/btn_mingob.png',
         },
         {
+          id:2,
           src_img: 'https://www.entrerios.gov.ar/portal/userfiles/images/otras_imagenes/btn_minplan.png',
         },
         {
+          id:3,
           src_img: 'https://www.entrerios.gov.ar/portal/userfiles/images/otras_imagenes/btn_produccion.png',
         },
         {
+          id:4,
           src_img: 'https://www.entrerios.gov.ar/portal/userfiles/images/otras_imagenes/btn_minecon.png',
         },
         {
+          id:5,
           src_img: 'https://www.entrerios.gov.ar/portal/userfiles/images/otras_imagenes/btn_dsocial.png',
         },
         {
+          id:6,
           src_img: 'https://www.entrerios.gov.ar/portal/userfiles/images/otras_imagenes/btn_salud.png',
         },
       ]
@@ -83,6 +91,7 @@ export default {
     Noticias,
     Flyers,
     Footer,
+    SubFooter,
     NumerosImportantes,
     Carrousel,
     ImagenesOrganismos,
@@ -106,3 +115,14 @@ export default {
 
 }
 </script>
+
+
+<style>
+
+.mainPage{
+
+  background-color: #cecece;
+
+}
+
+</style>
