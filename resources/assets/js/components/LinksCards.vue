@@ -1,15 +1,14 @@
 <template>
-<div class="row">
   <div class="col-sm-4">
-    <div class="card cardss" id="card1">
+    <div class="card cardss" :id="link.id">
       <div class="card-body">
-        <a class="fontCards" href="https://www.entrerios.gov.ar/minecon/index.php?codigo=76&codsubmenu=85&menu=menu&modulo=indetalle1">
-          Presupuesto general anual.
+        <a class="fontCards" :href="link.url">
+          {{link.nombre}}
         </a>
       </div>
     </div>
   </div>
-  <div class="col-sm-4">
+  <!-- <div class="col-sm-4">
     <div class="card cardss" id="card2">
       <div class="card-body">
         <a class="fontCards" href="https://www.entrerios.gov.ar/minecon/index.php?codigo=76&codsubmenu=86&menu=menu&modulo=indetalle2">
@@ -53,67 +52,34 @@
         </a>
       </div>
     </div>
-  </div>
+  </div> -->
 
-
-</div>
 </template>
 
 <script>
 export default {
 
-  props: ['src_img'],
+  props: ['link'],
 
-  methods :{
+  methods: {
 
-      jqueryFunctions : function(){
-        $('#card1').mouseover(function(){
-          $('#card1').addClass('animated pulse');
-        })
 
-        $('#card1').mouseleave(function(){
-          $('#card1').removeClass('animated pulse');
-        })
-        $('#card2').mouseover(function(){
-          $('#card2').addClass('animated pulse');
-        })
+    jqueryFunctions: function() {
 
-        $('#card2').mouseleave(function(){
-          $('#card2').removeClass('animated pulse');
-        })
+      let that = this;
 
-        $('#card3').mouseover(function(){
-          $('#card3').addClass('animated pulse');
-        })
-        $('#card3').mouseleave(function(){
-          $('#card3').removeClass('animated pulse');
-        })
+      $(`#${this.link.id}`).mouseover(function() {
+        $(`#${that.link.id}`).addClass('animated pulse');
+      })
 
-        $('#card4').mouseover(function(){
-          $('#card4').addClass('animated pulse');
-        })
+      $(`#${this.link.id}`).mouseleave(function() {
+        $(`#${that.link.id}`).removeClass('animated pulse');
+      })
 
-        $('#card4').mouseleave(function(){
-          $('#card4').removeClass('animated pulse');
-        })
-
-        $('#card5').mouseover(function(){
-          $('#card5').addClass('animated pulse');
-        })
-        $('#card5').mouseleave(function(){
-          $('#card5').removeClass('animated pulse');
-        })
-
-        $('#card6').mouseover(function(){
-          $('#card6').addClass('animated pulse');
-        })
-        $('#card6').mouseleave(function(){
-          $('#card6').removeClass('animated pulse');
-        })
-      }
+    }
   },
 
-  mounted () {
+  mounted() {
 
     this.jqueryFunctions();
 
@@ -135,7 +101,7 @@ export default {
 
 }
 .fontCards{
-  font-size: 2.5em;
+  font-size: 2em;
   color:white;
 }
 

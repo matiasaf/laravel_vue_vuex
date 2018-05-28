@@ -4,8 +4,8 @@
   <div class="card animated flipInX sombra">
     <div class="card-body">
       <h5 class="card-title">{{organismo.nombre}}</h5>
-      <h6 class="card-subtitle mb-2 text-muted">{{organismo.organismo_padre}}</h6>
-      <p class="card-text">Autoridad: {{organismo.director}}</p>
+      <h6 v-if="organismo.organismo_padre" class="card-subtitle mb-2 text-muted">{{organismo.organismo_padre}}</h6>
+      <p  v-if="organismo.director" class="card-text">Autoridad: {{organismo.director}}</p>
       <a :href="organismo.url" class="card-link">Ir al sitio</a>
     </div>
   </div>

@@ -1,8 +1,7 @@
 <template>
 <div class="micontainer">
 
-  <Navbar />
-
+    <Navbar />
 
     <router-view></router-view>
 

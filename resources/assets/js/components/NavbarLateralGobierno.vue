@@ -12,7 +12,7 @@
           <a class="nav-link" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="false">
                 Poder Ejecutivo
               </a>
-          <a class="nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages" role="tab" aria-controls="v-pills-messages" aria-selected="false">
+          <a class="nav-link" id="v-pills-organismos-sitios-web-tab" data-toggle="pill" href="#v-pills-organismos-sitios-web" role="tab" aria-controls="v-pills-organismos-sitios-web" aria-selected="false">
               Organismos con sitios webs
           </a>
           <a class="nav-link" id="v-pills-settings-tab" data-toggle="pill" href="#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="false">
@@ -45,6 +45,11 @@
           <ConsultaOrganismos />
 
         </div>
+        <div class="tab-pane fade show " id="v-pills-organismos-sitios-web" role="tabpanel" aria-labelledby="v-pills-organismos-sitios-web-tab">
+
+          <SitiosWebOrganismos />
+
+        </div>
 
         <div class="tab-pane fade show" id="v-pills-poder-judicial" role="tabpanel" aria-labelledby="v-pills-poder-judicial-tab">
 
@@ -68,6 +73,7 @@
 import ConsultaOrganismos from './ConsultaOrganismos';
 import EmpresasEstado from './EmpresasEstado';
 import PoderJudicial from './PoderJudicial';
+import SitiosWebOrganismos from './SitiosWebOrganismos';
 
 export default {
 
@@ -75,6 +81,7 @@ export default {
     ConsultaOrganismos,
     EmpresasEstado,
     PoderJudicial,
+    SitiosWebOrganismos,
   }
 
 }

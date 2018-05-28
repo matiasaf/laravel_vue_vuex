@@ -54733,7 +54733,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
 
 
 
@@ -54832,7 +54831,7 @@ exports = module.exports = __webpack_require__(0)(false);
 
 
 // module
-exports.push([module.i, "\n.navbarstyle {\n\n  background-color: #cecece;\n\n  -webkit-box-shadow: -1px 2px 18px -7px rgba(0,0,0,0.75);\n  box-shadow: -1px 2px 18px -7px rgba(0,0,0,0.75);\n}\n.logo {\n  height: 40px;\n}\n.linksfont {\n  padding: 15px;\n  color: black;\n  font-family: 'Montserrat', sans-serif;\n  font-size: 1.5vm;\n}\n", ""]);
+exports.push([module.i, "\n.navbarstyle {\n\n  background-color: #cecece;\n\n  -webkit-box-shadow: -1px 2px 18px -7px rgba(0, 0, 0, 0.75);\n  box-shadow: -1px 2px 18px -7px rgba(0, 0, 0, 0.75);\n}\n.logo {\n  height: 40px;\n}\n.linksfont {\n  padding: 15px;\n  color: black;\n  font-family: 'Montserrat', sans-serif;\n  font-size: 1.5vm;\n}\n\n/* General styles */\n\n/*body {\n  font: 400 20px 'Droid Sans', sans-serif;\n  line-height: 1.5em;\n  background-color: #fff;\n  color: #c0c5ce;\n}*/\n\n/* Style for header */\nheader {\n  position: relative;\n  background-color: #2c353a;\n  z-index: 5000;\n  position: fixed;\n  /* Set the navbar to fixed position */\n  top: -11px;\n  /* Position the navbar at the top of the page */\n  width: 100%;\n  /* Full width */\n}\nheader ul.nav {\n  overflow: hidden;\n}\nheader ul.nav li {\n  position: relative;\n  float: left;\n  width: 20%;\n}\nheader ul.nav li a {\n  display: block;\n\n  height: 50px;\n  opacity: 0;\n  font: 400 1.8em 'Allan', serif;\n  line-height: 50px;\n  color: #848e92;\n  text-decoration: none;\n  text-align: center;\n\n  margin-top: 45px;\n  margin-bottom: -25px;\n\n  cursor: default;\n  -webkit-transition: all 0.25s ease;\n  -moz-transition: all 0.25s ease;\n&:hover {\n    color: #fff;\n    background-color: #222b2f;\n}\n}\n@media screen and (max-width: 600px) {\nheader ul.nav li {\n    float: none;\n    width: 100%;\n}\nheader ul.nav li a {\n    height: 0;\n}\n}\n\n/* Style for header with active class name */\nheader.active ul.nav li a {\n  height: 120px;\n  opacity: 1;\n  line-height: 120px;\n  cursor: pointer;\n}\n@media screen and (max-width: 600px) {\nheader.active ul.nav li a {\n    height: 60px;\n    line-height: 60px;\n    border-bottom: 1px solid #222b2f;\n}\n}\n\n/* Style for the plus button */\nbutton.toggle-nav {\n  position: absolute;\n  top: 78px;\n  left: calc(50% - 30px);\n  width: 60px;\n  height: 35px;\n  background-color: #00afef;\n  font: 400 1.2em 'Allan', serif;\n  color: #fff;\n  border: none;\n  line-height: 30px;\n  vertical-align: middle;\n  outline: none;\n  cursor: pointer;\n  border-bottom-left-radius: 10px;\n  border-bottom-right-radius: 10px;\n  -webkit-transition: all 0.25s ease;\n  -moz-transition: all 0.25s ease;\n}\nbutton.toggle-nav:hover {\n  height: 50px;\n}\nbutton.toggle-nav span {\n  display: block;\n  -webkit-transform: rotate(90deg);\n  -moz-transform: rotate(90deg);\n  -webkit-transition: all 0.25s ease;\n  -moz-transition: all 0.25s ease;\n}\n\n/* Style for the plus button when header has active classe name */\nheader.active button.toggle-nav {\n  top: 140px;\n  background-color: #256f6f;\n}\nheader.active button.toggle-nav span {\n  -webkit-transform: rotate(270deg);\n  -moz-transform: rotate(270deg);\n}\n@media screen and (max-width: 600px) {\nbutton.toggle-nav {\n    top: 0;\n    left: 15px;\n}\nheader.active button.toggle-nav {\n    top: 305px;\n}\n}\n.navbar {\n  z-index: 8000;\n  /*height: 70px;*/\n}\n", ""]);
 
 // exports
 
@@ -54893,12 +54892,38 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 
-  data: function data() {
-    return {};
+  mounted: function mounted() {
+
+    $(document).ready(function () {
+
+      var header = $('header'),
+          btn = $('button.toggle-nav');
+
+      btn.on('click', function () {
+        header.toggleClass('active');
+      });
+    });
   }
+
 });
 
 /***/ }),
@@ -54909,130 +54934,143 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "nav",
-    {
-      staticClass:
-        "navbar navbar-expand-lg navbar-light bg-light navbarstyle fixed-top"
-    },
-    [
-      _vm._m(0),
-      _vm._v(" "),
-      _vm._m(1),
-      _vm._v(" "),
-      _c(
-        "div",
-        {
-          staticClass: "collapse navbar-collapse",
-          attrs: { id: "navbarNavAltMarkup" }
-        },
-        [
-          _c("div", { staticClass: "navbar-nav" }, [
-            _c(
-              "a",
-              { staticClass: "nav-item nav-link active", attrs: { href: "#" } },
-              [
-                _c(
-                  "router-link",
-                  { staticClass: "linksfont", attrs: { to: { name: "main" } } },
-                  [_vm._v("Inicio")]
-                ),
-                _vm._v(" "),
-                _c("span", { staticClass: "sr-only" }, [_vm._v("(current)")])
-              ],
-              1
-            ),
-            _vm._v(" "),
-            _c(
-              "a",
-              { staticClass: "nav-item nav-link", attrs: { href: "#" } },
-              [
-                _c(
-                  "router-link",
-                  {
-                    staticClass: "linksfont",
-                    attrs: { to: { name: "gobierno" } }
-                  },
-                  [_vm._v("Gobierno")]
-                )
-              ],
-              1
-            ),
-            _vm._v(" "),
-            _c(
-              "a",
-              { staticClass: "nav-item nav-link", attrs: { href: "#" } },
-              [
-                _c(
-                  "router-link",
-                  {
-                    staticClass: "linksfont",
-                    attrs: { to: { name: "provincia" } }
-                  },
-                  [_vm._v("La provincia")]
-                )
-              ],
-              1
-            ),
-            _vm._v(" "),
-            _c(
-              "a",
-              {
-                staticClass: "nav-item nav-link disabled",
-                attrs: { href: "#" }
-              },
-              [
-                _c(
-                  "router-link",
-                  {
-                    staticClass: "linksfont",
-                    attrs: { to: { name: "transparencia" } }
-                  },
-                  [_vm._v("Transparencia")]
-                )
-              ],
-              1
-            ),
-            _vm._v(" "),
-            _c(
-              "a",
-              {
-                staticClass: "nav-item nav-link disabled",
-                attrs: { href: "#" }
-              },
-              [
-                _c(
-                  "router-link",
-                  { staticClass: "linksfont", attrs: { to: { name: "main" } } },
-                  [_vm._v("Contactanos")]
-                )
-              ],
-              1
-            ),
-            _vm._v(" "),
-            _c(
-              "a",
-              {
-                staticClass: "nav-item nav-link disabled pull-right",
-                attrs: { href: "#" }
-              },
-              [
-                _c(
-                  "router-link",
-                  {
-                    staticClass: "linksfont",
-                    attrs: { to: { name: "admin" } }
-                  },
-                  [_vm._v("Administración")]
-                )
-              ],
-              1
-            )
-          ])
-        ]
-      )
-    ]
-  )
+  return _c("div", [
+    _c(
+      "nav",
+      {
+        staticClass:
+          "navbar navbar-expand-lg navbar-light bg-light navbarstyle fixed-top"
+      },
+      [
+        _vm._m(0),
+        _vm._v(" "),
+        _vm._m(1),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass: "collapse navbar-collapse",
+            attrs: { id: "navbarNavAltMarkup" }
+          },
+          [
+            _c("div", { staticClass: "navbar-nav" }, [
+              _c(
+                "a",
+                {
+                  staticClass: "nav-item nav-link active",
+                  attrs: { href: "#" }
+                },
+                [
+                  _c(
+                    "router-link",
+                    {
+                      staticClass: "linksfont",
+                      attrs: { to: { name: "main" } }
+                    },
+                    [_vm._v("Inicio")]
+                  ),
+                  _vm._v(" "),
+                  _c("span", { staticClass: "sr-only" }, [_vm._v("(current)")])
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                { staticClass: "nav-item nav-link", attrs: { href: "#" } },
+                [
+                  _c(
+                    "router-link",
+                    {
+                      staticClass: "linksfont",
+                      attrs: { to: { name: "gobierno" } }
+                    },
+                    [_vm._v("Gobierno")]
+                  )
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                { staticClass: "nav-item nav-link", attrs: { href: "#" } },
+                [
+                  _c(
+                    "router-link",
+                    {
+                      staticClass: "linksfont",
+                      attrs: { to: { name: "provincia" } }
+                    },
+                    [_vm._v("La provincia")]
+                  )
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                {
+                  staticClass: "nav-item nav-link disabled",
+                  attrs: { href: "#" }
+                },
+                [
+                  _c(
+                    "router-link",
+                    {
+                      staticClass: "linksfont",
+                      attrs: { to: { name: "transparencia" } }
+                    },
+                    [_vm._v("Transparencia")]
+                  )
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                {
+                  staticClass: "nav-item nav-link disabled",
+                  attrs: { href: "#" }
+                },
+                [
+                  _c(
+                    "router-link",
+                    {
+                      staticClass: "linksfont",
+                      attrs: { to: { name: "main" } }
+                    },
+                    [_vm._v("Contactanos")]
+                  )
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                {
+                  staticClass: "nav-item nav-link disabled pull-right",
+                  attrs: { href: "#" }
+                },
+                [
+                  _c(
+                    "router-link",
+                    {
+                      staticClass: "linksfont",
+                      attrs: { to: { name: "admin" } }
+                    },
+                    [_vm._v("Administración")]
+                  )
+                ],
+                1
+              )
+            ])
+          ]
+        )
+      ]
+    ),
+    _vm._v(" "),
+    _vm._m(2)
+  ])
 }
 var staticRenderFns = [
   function() {
@@ -55068,6 +55106,40 @@ var staticRenderFns = [
       },
       [_c("span", { staticClass: "navbar-toggler-icon" })]
     )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("header", [
+      _c("button", { staticClass: "toggle-nav" }, [
+        _c("span", [_c("i", { staticClass: "fas fa-chevron-right" })])
+      ]),
+      _vm._v(" "),
+      _c("ul", { staticClass: "nav" }, [
+        _c("li", { staticClass: "loud" }, [
+          _c("a", { attrs: { href: "#" } }, [_vm._v("911 - Emergencias")])
+        ]),
+        _vm._v(" "),
+        _c("li", { staticClass: "loud" }, [
+          _c("a", { attrs: { href: "#" } }, [_vm._v("100 - Bomberos")])
+        ]),
+        _vm._v(" "),
+        _c("li", { staticClass: "loud" }, [
+          _c("a", { attrs: { href: "#" } }, [
+            _vm._v("107 - Emergencias médicas")
+          ])
+        ]),
+        _vm._v(" "),
+        _c("li", { staticClass: "loud" }, [
+          _c("a", { attrs: { href: "#" } }, [_vm._v("103 - Defensa civil")])
+        ]),
+        _vm._v(" "),
+        _c("li", { staticClass: "loud" }, [
+          _c("a", { attrs: { href: "#" } }, [_vm._v("102 - Ayuda al niño")])
+        ])
+      ])
+    ])
   }
 ]
 render._withStripped = true
@@ -58457,6 +58529,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__EmpresasEstado___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__EmpresasEstado__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__PoderJudicial__ = __webpack_require__(177);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__PoderJudicial___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__PoderJudicial__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__SitiosWebOrganismos__ = __webpack_require__(209);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__SitiosWebOrganismos___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__SitiosWebOrganismos__);
 //
 //
 //
@@ -58523,6 +58597,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+
 
 
 
@@ -58533,7 +58613,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
   components: {
     ConsultaOrganismos: __WEBPACK_IMPORTED_MODULE_0__ConsultaOrganismos___default.a,
     EmpresasEstado: __WEBPACK_IMPORTED_MODULE_1__EmpresasEstado___default.a,
-    PoderJudicial: __WEBPACK_IMPORTED_MODULE_2__PoderJudicial___default.a
+    PoderJudicial: __WEBPACK_IMPORTED_MODULE_2__PoderJudicial___default.a,
+    SitiosWebOrganismos: __WEBPACK_IMPORTED_MODULE_3__SitiosWebOrganismos___default.a
   }
 
 });
@@ -59053,13 +59134,17 @@ var render = function() {
           _vm._v(_vm._s(_vm.organismo.nombre))
         ]),
         _vm._v(" "),
-        _c("h6", { staticClass: "card-subtitle mb-2 text-muted" }, [
-          _vm._v(_vm._s(_vm.organismo.organismo_padre))
-        ]),
+        _vm.organismo.organismo_padre
+          ? _c("h6", { staticClass: "card-subtitle mb-2 text-muted" }, [
+              _vm._v(_vm._s(_vm.organismo.organismo_padre))
+            ])
+          : _vm._e(),
         _vm._v(" "),
-        _c("p", { staticClass: "card-text" }, [
-          _vm._v("Autoridad: " + _vm._s(_vm.organismo.director))
-        ]),
+        _vm.organismo.director
+          ? _c("p", { staticClass: "card-text" }, [
+              _vm._v("Autoridad: " + _vm._s(_vm.organismo.director))
+            ])
+          : _vm._e(),
         _vm._v(" "),
         _c(
           "a",
@@ -59567,6 +59652,20 @@ var render = function() {
             _c(
               "div",
               {
+                staticClass: "tab-pane fade show ",
+                attrs: {
+                  id: "v-pills-organismos-sitios-web",
+                  role: "tabpanel",
+                  "aria-labelledby": "v-pills-organismos-sitios-web-tab"
+                }
+              },
+              [_c("SitiosWebOrganismos")],
+              1
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              {
                 staticClass: "tab-pane fade show",
                 attrs: {
                   id: "v-pills-poder-judicial",
@@ -59656,11 +59755,11 @@ var staticRenderFns = [
               {
                 staticClass: "nav-link",
                 attrs: {
-                  id: "v-pills-messages-tab",
+                  id: "v-pills-organismos-sitios-web-tab",
                   "data-toggle": "pill",
-                  href: "#v-pills-messages",
+                  href: "#v-pills-organismos-sitios-web",
                   role: "tab",
-                  "aria-controls": "v-pills-messages",
+                  "aria-controls": "v-pills-organismos-sitios-web",
                   "aria-selected": "false"
                 }
               },
@@ -60915,7 +61014,7 @@ exports = module.exports = __webpack_require__(0)(false);
 
 
 // module
-exports.push([module.i, "\n.transparenciaPageContainer{\n\n  /*background-color: white;*/\n  font-weight: 600;\n}\n\n/*.titulo {\n\n  font-size: 2em;\n  color: #0fb3f0;\n  margin:2%;\n\n\n}*/\n", ""]);
+exports.push([module.i, "\n.transparenciaPageContainer {\n\n  /*background-color: white;*/\n  font-weight: 600;\n}\n\n/*.titulo {\n\n  font-size: 2em;\n  color: #0fb3f0;\n  margin:2%;\n\n\n}*/\n", ""]);
 
 // exports
 
@@ -60982,7 +61081,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -60994,6 +61100,49 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     Parallax: __WEBPACK_IMPORTED_MODULE_0__components_Parallax___default.a,
     BotonSubir: __WEBPACK_IMPORTED_MODULE_2__components_BotonSubir___default.a,
     LinksCards: __WEBPACK_IMPORTED_MODULE_3__components_LinksCards___default.a
+  },
+  data: function data() {
+    return {
+      linksFinanzas: [{
+        id: 1 + 'tagFinanzas',
+        nombre: 'Presupuesto general anual.',
+        url: 'https://www.entrerios.gov.ar/minecon/index.php?codigo=76&codsubmenu=85&menu=menu&modulo=indetalle1'
+      }, {
+        id: 2 + 'tagFinanzas',
+        nombre: 'Presupuesto plurianual.',
+        url: 'https://www.entrerios.gov.ar/minecon/index.php?codigo=76&codsubmenu=86&menu=menu&modulo=indetalle2'
+      }, {
+        id: 3 + 'tagFinanzas',
+        nombre: 'Ingresos públicos.',
+        url: 'https://www.entrerios.gov.ar/minecon/index.php?codigo=76&codsubmenu=87&menu=menu&modulo=indetalle3'
+      }],
+      linksLicitaciones: [{
+        id: 1 + 'tagLicitaciones',
+        nombre: 'Licitaciones - Dirección General de Contrataciones.',
+        url: 'http://www.entrerios.gov.ar/contrataciones/index.php?codigo=76&item=&menu=menu&modulo=licitacion&accion='
+      }],
+      linksEstadisticasCensos: [{
+        id: 1 + 'tagEstadisticas',
+        nombre: 'Población de Gobiernos Locales (segun censo 2010).',
+        url: 'https://www.entrerios.gov.ar/dgec/censo2010/'
+      }, {
+        id: 2 + 'tagEstadisticas',
+        nombre: 'Producto Bruto Provincial (cuadros)',
+        url: 'https://www.entrerios.gov.ar/dgec/pbg/'
+      }, {
+        id: 3 + 'tagEstadisticas',
+        nombre: 'Comercio exterior (series estadísticas)',
+        url: 'https://www.entrerios.gov.ar/dgec/comercio-exterior-series/'
+      }, {
+        id: 4 + 'tagEstadisticas',
+        nombre: 'Encuesta permanente de hogares',
+        url: 'https://www.entrerios.gov.ar/dgec/trabajoeingresos/'
+      }, {
+        id: 5 + 'tagEstadisticas',
+        nombre: 'Otros indicadores económicos y sociales.',
+        url: 'https://www.entrerios.gov.ar/dgec/prensa/'
+      }]
+    };
   }
 
 });
@@ -61084,7 +61233,7 @@ exports = module.exports = __webpack_require__(0)(false);
 
 
 // module
-exports.push([module.i, "\n.cardss{\n\n  background-color: #90af71;\n\n  margin:5%;\n\n  -webkit-box-shadow: -1px 6px 18px -7px rgba(0,0,0,0.75);\n  box-shadow: -1px 6px 18px -7px rgba(0,0,0,0.75);\n}\n.fontCards{\n  font-size: 2.5em;\n  color:white;\n}\n\n", ""]);
+exports.push([module.i, "\n.cardss{\n\n  background-color: #90af71;\n\n  margin:5%;\n\n  -webkit-box-shadow: -1px 6px 18px -7px rgba(0,0,0,0.75);\n  box-shadow: -1px 6px 18px -7px rgba(0,0,0,0.75);\n}\n.fontCards{\n  font-size: 2em;\n  color:white;\n}\n\n", ""]);
 
 // exports
 
@@ -61153,59 +61302,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 
-  props: ['src_img'],
+  props: ['link'],
 
   methods: {
 
     jqueryFunctions: function jqueryFunctions() {
-      $('#card1').mouseover(function () {
-        $('#card1').addClass('animated pulse');
+
+      var that = this;
+
+      $('#' + this.link.id).mouseover(function () {
+        $('#' + that.link.id).addClass('animated pulse');
       });
 
-      $('#card1').mouseleave(function () {
-        $('#card1').removeClass('animated pulse');
-      });
-      $('#card2').mouseover(function () {
-        $('#card2').addClass('animated pulse');
-      });
-
-      $('#card2').mouseleave(function () {
-        $('#card2').removeClass('animated pulse');
-      });
-
-      $('#card3').mouseover(function () {
-        $('#card3').addClass('animated pulse');
-      });
-      $('#card3').mouseleave(function () {
-        $('#card3').removeClass('animated pulse');
-      });
-
-      $('#card4').mouseover(function () {
-        $('#card4').addClass('animated pulse');
-      });
-
-      $('#card4').mouseleave(function () {
-        $('#card4').removeClass('animated pulse');
-      });
-
-      $('#card5').mouseover(function () {
-        $('#card5').addClass('animated pulse');
-      });
-      $('#card5').mouseleave(function () {
-        $('#card5').removeClass('animated pulse');
-      });
-
-      $('#card6').mouseover(function () {
-        $('#card6').addClass('animated pulse');
-      });
-      $('#card6').mouseleave(function () {
-        $('#card6').removeClass('animated pulse');
+      $('#' + this.link.id).mouseleave(function () {
+        $('#' + that.link.id).removeClass('animated pulse');
       });
     }
   },
@@ -61224,123 +61337,17 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "row" }, [
-      _c("div", { staticClass: "col-sm-4" }, [
-        _c("div", { staticClass: "card cardss", attrs: { id: "card1" } }, [
-          _c("div", { staticClass: "card-body" }, [
-            _c(
-              "a",
-              {
-                staticClass: "fontCards",
-                attrs: {
-                  href:
-                    "https://www.entrerios.gov.ar/minecon/index.php?codigo=76&codsubmenu=85&menu=menu&modulo=indetalle1"
-                }
-              },
-              [_vm._v("\n          Presupuesto general anual.\n        ")]
-            )
-          ])
-        ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-sm-4" }, [
-        _c("div", { staticClass: "card cardss", attrs: { id: "card2" } }, [
-          _c("div", { staticClass: "card-body" }, [
-            _c(
-              "a",
-              {
-                staticClass: "fontCards",
-                attrs: {
-                  href:
-                    "https://www.entrerios.gov.ar/minecon/index.php?codigo=76&codsubmenu=86&menu=menu&modulo=indetalle2"
-                }
-              },
-              [_vm._v("\n          Presupuesto plurianual.\n        ")]
-            )
-          ])
-        ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-sm-4" }, [
-        _c("div", { staticClass: "card cardss", attrs: { id: "card3" } }, [
-          _c("div", { staticClass: "card-body" }, [
-            _c(
-              "a",
-              {
-                staticClass: "fontCards",
-                attrs: {
-                  href:
-                    "https://www.entrerios.gov.ar/minecon/index.php?codigo=76&codsubmenu=87&menu=menu&modulo=indetalle3"
-                }
-              },
-              [_vm._v("\n          Ingresos públicos.\n        ")]
-            )
-          ])
-        ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-sm-4" }, [
-        _c("div", { staticClass: "card cardss", attrs: { id: "card4" } }, [
-          _c("div", { staticClass: "card-body" }, [
-            _c(
-              "a",
-              {
-                staticClass: "fontCards",
-                attrs: {
-                  href: "https://www.entrerios.gov.ar/contaduria/index.php"
-                }
-              },
-              [_vm._v("\n          Información fiscal.\n        ")]
-            )
-          ])
-        ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-sm-4" }, [
-        _c("div", { staticClass: "card cardss", attrs: { id: "card5" } }, [
-          _c("div", { staticClass: "card-body" }, [
-            _c(
-              "a",
-              {
-                staticClass: "fontCards",
-                attrs: {
-                  href:
-                    "https://www.entrerios.gov.ar/minecon/index.php?codigo=76&codsubmenu=89&menu=menu&modulo=indetalle5"
-                }
-              },
-              [_vm._v("\n          Nómina de personal.\n        ")]
-            )
-          ])
-        ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-sm-4" }, [
-        _c("div", { staticClass: "card cardss", attrs: { id: "card6" } }, [
-          _c("div", { staticClass: "card-body" }, [
-            _c(
-              "a",
-              {
-                staticClass: "fontCards",
-                attrs: {
-                  href:
-                    "https://www.entrerios.gov.ar/minecon/index.php?codigo=76&codsubmenu=90&menu=menu&modulo=indetalle6"
-                }
-              },
-              [_vm._v("\n          Planta de personal.\n        ")]
-            )
-          ])
+  return _c("div", { staticClass: "col-sm-4" }, [
+    _c("div", { staticClass: "card cardss", attrs: { id: _vm.link.id } }, [
+      _c("div", { staticClass: "card-body" }, [
+        _c("a", { staticClass: "fontCards", attrs: { href: _vm.link.url } }, [
+          _vm._v("\n        " + _vm._s(_vm.link.nombre) + "\n      ")
         ])
       ])
     ])
-  }
-]
+  ])
+}
+var staticRenderFns = []
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
@@ -61365,7 +61372,7 @@ var render = function() {
       _c("Parallax", {
         attrs: {
           urlImage:
-            "https://www.entrerios.gov.ar/portal/img/enca_transparencia.png"
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQt_DUb4GJ48c4jzHQ8jFy8y9FZ5y3nGUdGBza4F3TRLnxkShiP"
         }
       }),
       _vm._v(" "),
@@ -61374,7 +61381,15 @@ var render = function() {
           _vm._v("\n      Información de finanzas\n    ")
         ]),
         _vm._v(" "),
-        _c("div", { staticClass: "card-body" }, [_c("LinksCards")], 1)
+        _c("div", { staticClass: "card-body" }, [
+          _c(
+            "div",
+            { staticClass: "row" },
+            _vm._l(_vm.linksFinanzas, function(link) {
+              return _c("LinksCards", { attrs: { link: link, id: "link.id" } })
+            })
+          )
+        ])
       ]),
       _vm._v(" "),
       _c("div", { staticClass: "card" }, [
@@ -61382,7 +61397,15 @@ var render = function() {
           _vm._v("\n      Información de licitaciones\n    ")
         ]),
         _vm._v(" "),
-        _c("div", { staticClass: "card-body" }, [_c("LinksCards")], 1)
+        _c("div", { staticClass: "card-body" }, [
+          _c(
+            "div",
+            { staticClass: "row" },
+            _vm._l(_vm.linksLicitaciones, function(link) {
+              return _c("LinksCards", { attrs: { link: link } })
+            })
+          )
+        ])
       ]),
       _vm._v(" "),
       _c("div", { staticClass: "card" }, [
@@ -61390,7 +61413,15 @@ var render = function() {
           _vm._v("\n      Información de estadísticas y censos\n    ")
         ]),
         _vm._v(" "),
-        _c("div", { staticClass: "card-body" }, [_c("LinksCards")], 1)
+        _c("div", { staticClass: "card-body" }, [
+          _c(
+            "div",
+            { staticClass: "row" },
+            _vm._l(_vm.linksEstadisticasCensos, function(link) {
+              return _c("LinksCards", { attrs: { link: link } })
+            })
+          )
+        ])
       ]),
       _vm._v(" "),
       _c("BotonSubir")
@@ -61413,6 +61444,267 @@ if (false) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 208 */,
+/* 209 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(210)
+}
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(212)
+/* template */
+var __vue_template__ = __webpack_require__(213)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/SitiosWebOrganismos.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-e4d118d8", Component.options)
+  } else {
+    hotAPI.reload("data-v-e4d118d8", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 210 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(211);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(2)("54e17ea4", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-e4d118d8\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./SitiosWebOrganismos.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-e4d118d8\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./SitiosWebOrganismos.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 211 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(0)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.card-organismos {\n  background-color: #c0cc9c;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 212 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__OrganismoCard__ = __webpack_require__(166);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__OrganismoCard___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__OrganismoCard__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  components: {
+    OrganismoCard: __WEBPACK_IMPORTED_MODULE_0__OrganismoCard___default.a
+  },
+
+  data: function data() {
+    return {
+      organismos: [{
+        nombre: 'Biblioteca Provincial',
+        url: 'https://www.entrerios.gov.ar/biper'
+      }, {
+        nombre: 'Consejo de la Magistratura',
+        url: 'https://www.entrerios.gov.ar/magistratura'
+      }, {
+        nombre: 'Consejo General de Educación',
+        url: 'http://cge.entrerios.gov.ar/'
+      }, {
+        nombre: 'Delta Sustentable',
+        url: 'https://www.entrerios.gov.ar/deltasustentable'
+      }, {
+        nombre: 'Dirección de Desarrollo Eléctrico',
+        url: 'https://www.entrerios.gov.ar/desarrolloelectrico'
+      }, {
+        nombre: 'Dirección General de Informática',
+        url: 'https://www.entrerios.gov.ar/dgin'
+      }, {
+        nombre: 'Escribanía Mayor de Gobierno',
+        url: 'http://www.entrerios.gov.ar/escribaniamayor/'
+      }, {
+        nombre: 'Fiscalía de Estado',
+        url: 'https://www.entrerios.gov.ar/fiscalia'
+      }, {
+        nombre: 'IPRODI - Instituto Provincial de Discapacidad',
+        url: 'http://www.iprodi.gob.ar/'
+      }, {
+        nombre: 'La Vieja Usina',
+        url: 'https://www.entrerios.gov.ar/viejausina'
+      }, {
+        nombre: 'Oficina Anticorrupción y Ética Pública',
+        url: 'https://www.entrerios.gov.ar/anticorrupcion'
+      }, {
+        nombre: 'Programa Provincial de Educación Ambiental',
+        url: 'https://www.entrerios.gov.ar/pea'
+      }, {
+        nombre: 'Representación del Gobierno de Entre Ríos en Capital Federal',
+        url: 'http://www.casadeentrerios.gov.ar/'
+      }, {
+        nombre: 'Secretaría de Ambiente',
+        url: 'https://www.entrerios.gov.ar/ambiente'
+      }, {
+        nombre: 'Secretaría de Cultura',
+        url: 'http://cultura.entrerios.gov.ar/'
+      }, {
+        nombre: 'Secretaría de Energía',
+        url: 'https://www.entrerios.gov.ar/secretariadeenergia'
+      }],
+
+      filtro_organismo: ''
+
+    };
+  },
+  computed: {
+    organismosFiltrados: function organismosFiltrados() {
+      var filtro_organismo = this.filtro_organismo;
+
+      return this.organismos.filter(function (organismo) {
+        return organismo.nombre.toLowerCase().indexOf(filtro_organismo) > -1;
+      });
+    }
+  }
+});
+
+/***/ }),
+/* 213 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", [
+    _c("div", { staticClass: "row" }, [
+      _c("div", { staticClass: "col-sm-4" }),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-sm-4" }, [
+        _c("input", {
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.filtro_organismo,
+              expression: "filtro_organismo"
+            }
+          ],
+          staticClass: "form-control",
+          attrs: { type: "text", placeholder: "Filtre por organismo ..." },
+          domProps: { value: _vm.filtro_organismo },
+          on: {
+            input: function($event) {
+              if ($event.target.composing) {
+                return
+              }
+              _vm.filtro_organismo = $event.target.value
+            }
+          }
+        })
+      ])
+    ]),
+    _vm._v(" "),
+    _c("br"),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticClass: "row" },
+      _vm._l(_vm.organismosFiltrados, function(organismo) {
+        return _c("OrganismoCard", { attrs: { organismo: organismo } })
+      })
+    )
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-e4d118d8", module.exports)
+  }
+}
 
 /***/ })
 /******/ ]);
